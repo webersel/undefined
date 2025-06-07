@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import gameLinks from '../data/gameLinks';
 
 export interface TerminalState {
   proxyActive: boolean;
@@ -14,7 +15,7 @@ export const useTerminalCommands = (): TerminalHooks => {
   const [secretsFound, setSecretsFound] = useState(0);
   const [proxyActive, setProxyActive] = useState(false);
   const [vmActive, setVmActive] = useState(false);
-  
+
   const easterEggs = [
     "you found a secret! there are more to discover...",
     "another secret found! keep exploring...",
@@ -23,10 +24,16 @@ export const useTerminalCommands = (): TerminalHooks => {
     "final secret discovered! you've found them all!"
   ];
 
+  const openInBlankTab = (url: string) => {
+    const win = window.open("about:blank", "_blank");
+    win?.document.write(`<iframe src="${url}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe>`);
+  };
+
   const processCommand = (command: string): string[] => {
     const cmd = command.toLowerCase().trim();
-    
-    // Basic commands
+    const parts = cmd.split(" ");
+
+    // BASIC
     if (cmd === 'help') {
       return [
         "available commands:",
@@ -41,14 +48,14 @@ export const useTerminalCommands = (): TerminalHooks => {
         "  matrix - enter the matrix",
         "  proxy - toggle proxy server",
         "  vm - toggle virtual machine",
+        "  open [game] - launch a supported game",
+        "  open gameui - visual game browser",
         "  secret - ???"
       ];
-    } 
-    
-    if (cmd === 'clear') {
-      return ["type 'help' for available commands"];
     }
-    
+
+    if (cmd === 'clear') return ["type 'help' for available commands"];
+
     if (cmd === 'about') {
       return [
         "undefined is a collective of hackers, artists, and digital explorers.",
@@ -59,7 +66,7 @@ export const useTerminalCommands = (): TerminalHooks => {
         "status: active"
       ];
     }
-    
+
     if (cmd === 'skills') {
       return [
         "technical skills:",
@@ -72,7 +79,7 @@ export const useTerminalCommands = (): TerminalHooks => {
         "  - signal processing"
       ];
     }
-    
+
     if (cmd === 'projects') {
       return [
         "active projects:",
@@ -84,7 +91,7 @@ export const useTerminalCommands = (): TerminalHooks => {
         "all projects are strictly for educational purposes."
       ];
     }
-    
+
     if (cmd === 'contact') {
       return [
         "contact channels:",
@@ -95,16 +102,16 @@ export const useTerminalCommands = (): TerminalHooks => {
         "communication is encrypted by default."
       ];
     }
-    
+
     if (cmd.startsWith('echo ')) {
       const text = command.substring(5);
       return [text];
     }
-    
+
     if (cmd === 'date') {
       return [new Date().toString()];
     }
-    
+
     if (cmd === 'matrix') {
       return [
         "entering the matrix...",
@@ -116,61 +123,70 @@ export const useTerminalCommands = (): TerminalHooks => {
         "(matrix mode activated in background)"
       ];
     }
-    
+
+    // PROXY & VM
     if (cmd === 'proxy') {
       setProxyActive(!proxyActive);
-      if (!proxyActive) {
-        return [
-          "initializing proxy server...",
-          "routing traffic through distributed nodes...",
-          "encrypting connection...",
-          "proxy server active. your traffic is now masked.",
-          "",
-          "current status: ACTIVE",
-          "latency: 42ms",
-          "encryption: AES-256",
-          "exit nodes: 3"
-        ];
-      } else {
-        return [
-          "shutting down proxy server...",
-          "clearing connection logs...",
-          "proxy server deactivated.",
-          "",
-          "current status: INACTIVE"
-        ];
-      }
+      openInBlankTab("https://holyubofficial.net");
+      return proxyActive
+        ? ["proxy server deactivated. current status: INACTIVE"]
+        : [
+            "initializing proxy server...",
+            "routing traffic through distributed nodes...",
+            "encrypting connection...",
+            "proxy server active. your traffic is now masked.",
+            "",
+            "current status: ACTIVE",
+            "latency: 42ms",
+            "encryption: AES-256",
+            "exit nodes: 3"
+          ];
     }
-    
+
     if (cmd === 'vm') {
       setVmActive(!vmActive);
-      if (!vmActive) {
-        return [
-          "initializing virtual machine...",
-          "allocating resources...",
-          "mounting encrypted volume...",
-          "starting secure environment...",
-          "",
-          "vm status: RUNNING",
-          "memory: 4096MB",
-          "cpu cores: 2",
-          "os: kali_linux_2025.1",
-          "",
-          "vm ready for operations."
-        ];
+      openInBlankTab("https://copy.sh/v86/?profile=windows");
+      return vmActive
+        ? [
+            "shutting down virtual machine...",
+            "saving state...",
+            "unmounting volumes...",
+            "clearing memory...",
+            "",
+            "vm status: STOPPED"
+          ]
+        : [
+            "initializing virtual machine...",
+            "allocating resources...",
+            "mounting encrypted volume...",
+            "starting secure environment...",
+            "",
+            "vm status: RUNNING",
+            "memory: 4096MB",
+            "cpu cores: 2",
+            "os: kali_linux_2025.1",
+            "",
+            "vm ready for operations."
+          ];
+    }
+
+    // OPEN GAME
+    if (parts[0] === 'open' && parts[1]) {
+      const gameKey = parts.slice(1).join("").toLowerCase();
+      if (gameKey === "gameui") {
+        openInBlankTab("/gameui"); // assumes hosted route
+        return ["[gameui] visual game browser opened"];
+      }
+
+      if (gameLinks[gameKey]) {
+        openInBlankTab(gameLinks[gameKey]);
+        return [`[game] ${gameKey} launched in new tab`];
       } else {
-        return [
-          "shutting down virtual machine...",
-          "saving state...",
-          "unmounting volumes...",
-          "clearing memory...",
-          "",
-          "vm status: STOPPED"
-        ];
+        return ["[error] game not found"];
       }
     }
-    
-    // Easter eggs
+
+    // EASTER EGGS
     if (cmd === 'secret' || cmd === 'secrets') {
       if (secretsFound < easterEggs.length) {
         const message = easterEggs[secretsFound];
@@ -180,7 +196,7 @@ export const useTerminalCommands = (): TerminalHooks => {
         return ["all secrets have been found. impressive."];
       }
     }
-    
+
     if (cmd === 'hack') {
       return [
         "initiating hack sequence...",
@@ -194,28 +210,16 @@ export const useTerminalCommands = (): TerminalHooks => {
         "(note: this is just a simulation, no actual hacking occurred)"
       ];
     }
-    
-    if (cmd === 'sudo') {
-      return ["nice try, but you don't have root privileges here."];
-    }
-    
-    if (cmd === 'exit' || cmd === 'quit') {
-      return ["there is no exit from this reality."];
-    }
-    
-    if (cmd === '42' || cmd === 'meaning of life') {
-      return ["so you're a hitchhiker's guide fan? respect."];
-    }
-    
-    if (cmd === 'coffee') {
-      return ["brewing virtual coffee... ☕ enjoy!"];
-    }
-    
-    // Default response for unknown commands
+
+    if (cmd === 'sudo') return ["nice try, but you don't have root privileges here."];
+    if (cmd === 'exit' || cmd === 'quit') return ["there is no exit from this reality."];
+    if (cmd === '42' || cmd === 'meaning of life') return ["so you're a hitchhiker's guide fan? respect."];
+    if (cmd === 'coffee') return ["brewing virtual coffee... ☕ enjoy!"];
+
     return [`command not found: ${command}. type 'help' for available commands.`];
   };
 
-  return { 
+  return {
     processCommand,
     state: {
       proxyActive,
