@@ -1,11 +1,10 @@
-
 const gameLinks: Record<string, string> = {
   basketbros: "https://basketbros.io",
   slope: "https://slopegame.io",
   run3: "https://www.coolmathgames.com/0-run-3",
   motoX3M: "https://www.coolmathgames.com/0-moto-x3m",
   geometrydash: "https://geometrydashlitepc.io",
-  1v1lol: "https://1v1.lol",
+  "1v1lol": "https://1v1.lol",
   vex7: "https://www.coolmathgames.com/0-vex-7",
   vex6: "https://www.coolmathgames.com/0-vex-6",
   vex5: "https://www.coolmathgames.com/0-vex-5",

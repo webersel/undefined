@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import gameLinks from '../data/gameLinks';
+import gameLinks from '../../gameLinks';
 
 export interface TerminalState {
   proxyActive: boolean;
