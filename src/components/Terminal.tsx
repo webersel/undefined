@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTerminalCommands } from '../hooks/useTerminalCommands';
-import gameLinks from '../data/gameLinks';
+import gameLinks from '../../gameLinks';
 
 interface TerminalProps {
   initialMessage?: string;

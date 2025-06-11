@@ -1,5 +1,5 @@
 import React from 'react';
-import gameLinks from '../data/gameLinks';
+import gameLinks from './gameLinks';
 
 const categories: Record<string, string[]> = {
   Action: ['basketbros', '1v1lol', 'retrobowl', 'amongus', 'zombsroyale'],
@@ -15,7 +15,7 @@ const GameUI: React.FC = () => {
     const url = gameLinks[key];
     if (!url) return;
     const win = window.open("about:blank", "_blank");
-    win?.document.write(\`<iframe src="\${url}" style="position:absolute;width:100%;height:100%;border:none;"></iframe>\`);
+    win?.document.write(`<iframe src="${url}" style="position:absolute;width:100%;height:100%;border:none;"></iframe>`);
   };
 
   return (
