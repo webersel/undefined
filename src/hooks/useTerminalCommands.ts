@@ -33,7 +33,6 @@ export const useTerminalCommands = (): TerminalHooks => {
     const cmd = command.toLowerCase().trim();
     const parts = cmd.split(" ");
 
-    // BASIC
     if (cmd === 'help') {
       return [
         "available commands:",
@@ -46,9 +45,11 @@ export const useTerminalCommands = (): TerminalHooks => {
         "  echo [text] - display text",
         "  date - show current date",
         "  matrix - enter the matrix",
-        "  proxy - toggle proxy server",
-        "  vm - toggle virtual machine",
-        "  open [game] - launch a supported game",
+        "  proxy - open proxy tab (use 'proxy nowgg' for now.gg)",
+        "  vm - open Windows 11 VM",
+        "  vm win10 - open Windows 10 VM",
+        "  vm mint - open Linux Mint VM",
+        "  open [game] - launch supported game",
         "  open gameui - visual game browser",
         "  secret - ???"
       ];
@@ -56,128 +57,94 @@ export const useTerminalCommands = (): TerminalHooks => {
 
     if (cmd === 'clear') return ["type 'help' for available commands"];
 
-    if (cmd === 'about') {
-      return [
-        "undefined is a collective of hackers, artists, and digital explorers.",
-        "we operate in the margins of cyberspace, between the binary.",
-        "we create, we break, we rebuild.",
-        "",
-        "established: 2025",
-        "status: active"
-      ];
-    }
+    if (cmd === 'about') return [
+      "undefined is a collective of hackers, artists, and digital explorers.",
+      "we operate in the margins of cyberspace, between the binary.",
+      "we create, we break, we rebuild.",
+      "",
+      "established: 2025",
+      "status: active"
+    ];
 
-    if (cmd === 'skills') {
-      return [
-        "technical skills:",
-        "  - system infiltration",
-        "  - data extraction",
-        "  - digital forensics",
-        "  - cryptography",
-        "  - network analysis",
-        "  - vulnerability research",
-        "  - signal processing"
-      ];
-    }
+    if (cmd === 'skills') return [
+      "technical skills:",
+      "  - system infiltration",
+      "  - data extraction",
+      "  - digital forensics",
+      "  - cryptography",
+      "  - network analysis",
+      "  - vulnerability research",
+      "  - signal processing"
+    ];
 
-    if (cmd === 'projects') {
-      return [
-        "active projects:",
-        "  - ghost protocol: stealth networking",
-        "  - zero-day initiative: vulnerability research",
-        "  - byte_alchemy: data transformation",
-        "  - shadow_net: secure communications",
-        "",
-        "all projects are strictly for educational purposes."
-      ];
-    }
+    if (cmd === 'projects') return [
+      "active projects:",
+      "  - ghost protocol: stealth networking",
+      "  - zero-day initiative: vulnerability research",
+      "  - byte_alchemy: data transformation",
+      "  - shadow_net: secure communications",
+      "",
+      "all projects are strictly for educational purposes."
+    ];
 
-    if (cmd === 'contact') {
-      return [
-        "contact channels:",
-        "  - encrypted email: contact@undefined.io",
-        "  - secure drop: [access restricted]",
-        "  - onion site: und3f1n3d.onion",
-        "",
-        "communication is encrypted by default."
-      ];
-    }
+    if (cmd === 'contact') return [
+      "contact channels:",
+      "  - encrypted email: contact@undefined.io",
+      "  - secure drop: [access restricted]",
+      "  - onion site: und3f1n3d.onion",
+      "",
+      "communication is encrypted by default."
+    ];
 
-    if (cmd.startsWith('echo ')) {
-      const text = command.substring(5);
-      return [text];
-    }
+    if (cmd.startsWith('echo ')) return [command.substring(5)];
+    if (cmd === 'date') return [new Date().toString()];
 
-    if (cmd === 'date') {
-      return [new Date().toString()];
-    }
+    if (cmd === 'matrix') return [
+      "entering the matrix...",
+      "",
+      "wake up, neo...",
+      "the matrix has you...",
+      "follow the white rabbit.",
+      "",
+      "(matrix mode activated in background)"
+    ];
 
-    if (cmd === 'matrix') {
-      return [
-        "entering the matrix...",
-        "",
-        "wake up, neo...",
-        "the matrix has you...",
-        "follow the white rabbit.",
-        "",
-        "(matrix mode activated in background)"
-      ];
-    }
-
-    // PROXY & VM
-    if (cmd === 'proxy') {
-      setProxyActive(!proxyActive);
+    if (cmd === 'proxy' || cmd === 'proxy normal') {
+      setProxyActive(true);
       openInBlankTab("https://holyubofficial.net");
-      return proxyActive
-        ? ["proxy server deactivated. current status: INACTIVE"]
-        : [
-            "initializing proxy server...",
-            "routing traffic through distributed nodes...",
-            "encrypting connection...",
-            "proxy server active. your traffic is now masked.",
-            "",
-            "current status: ACTIVE",
-            "latency: 42ms",
-            "encryption: AES-256",
-            "exit nodes: 3"
-          ];
+      return ["[proxy] opened proxy site in new tab"];
+    }
+
+    if (cmd === 'proxy nowgg') {
+      setProxyActive(true);
+      openInBlankTab("https://interstellar.cx");
+      return ["[proxy] opened now.gg-compatible proxy in new tab"];
     }
 
     if (cmd === 'vm') {
-      setVmActive(!vmActive);
+      setVmActive(true);
       openInBlankTab("https://copy.sh/v86/?profile=windows");
-      return vmActive
-        ? [
-            "shutting down virtual machine...",
-            "saving state...",
-            "unmounting volumes...",
-            "clearing memory...",
-            "",
-            "vm status: STOPPED"
-          ]
-        : [
-            "initializing virtual machine...",
-            "allocating resources...",
-            "mounting encrypted volume...",
-            "starting secure environment...",
-            "",
-            "vm status: RUNNING",
-            "memory: 4096MB",
-            "cpu cores: 2",
-            "os: kali_linux_2025.1",
-            "",
-            "vm ready for operations."
-          ];
+      return ["[vm] windows 11 launched in new tab"];
     }
 
-    // OPEN GAME
+    if (cmd === 'vm win10') {
+      setVmActive(true);
+      openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=win10");
+      return ["[vm] windows 10 launched in new tab"];
+    }
+
+    if (cmd === 'vm mint') {
+      setVmActive(true);
+      openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=linuxmint");
+      return ["[vm] linux mint launched in new tab"];
+    }
+
     if (parts[0] === 'open' && parts[1]) {
       const gameKey = parts.slice(1).join("").toLowerCase();
-      if (gameKey === "gameui") {
-        openInBlankTab("/gameui"); // assumes hosted route
+      if (gameKey === 'gameui') {
+        openInBlankTab("/gameui");
         return ["[gameui] visual game browser opened"];
       }
-
       if (gameLinks[gameKey]) {
         openInBlankTab(gameLinks[gameKey]);
         return [`[game] ${gameKey} launched in new tab`];
@@ -186,7 +153,6 @@ export const useTerminalCommands = (): TerminalHooks => {
       }
     }
 
-    // EASTER EGGS
     if (cmd === 'secret' || cmd === 'secrets') {
       if (secretsFound < easterEggs.length) {
         const message = easterEggs[secretsFound];
@@ -197,19 +163,17 @@ export const useTerminalCommands = (): TerminalHooks => {
       }
     }
 
-    if (cmd === 'hack') {
-      return [
-        "initiating hack sequence...",
-        "target acquired...",
-        "bypassing firewall...",
-        "accessing mainframe...",
-        "downloading data...",
-        "covering tracks...",
-        "hack complete.",
-        "",
-        "(note: this is just a simulation, no actual hacking occurred)"
-      ];
-    }
+    if (cmd === 'hack') return [
+      "initiating hack sequence...",
+      "target acquired...",
+      "bypassing firewall...",
+      "accessing mainframe...",
+      "downloading data...",
+      "covering tracks...",
+      "hack complete.",
+      "",
+      "(note: this is just a simulation, no actual hacking occurred)"
+    ];
 
     if (cmd === 'sudo') return ["nice try, but you don't have root privileges here."];
     if (cmd === 'exit' || cmd === 'quit') return ["there is no exit from this reality."];
@@ -221,9 +185,6 @@ export const useTerminalCommands = (): TerminalHooks => {
 
   return {
     processCommand,
-    state: {
-      proxyActive,
-      vmActive
-    }
+    state: { proxyActive, vmActive }
   };
 };
