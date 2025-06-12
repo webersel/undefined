@@ -25,8 +25,31 @@ export const useTerminalCommands = (): TerminalHooks => {
   ];
 
   const openInBlankTab = (url: string) => {
-    const win = window.open("about:blank", "_blank");
-    win?.document.write(`<iframe src="${url}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe>`);
+    try {
+      const win = window.open("", "_blank");
+      if (win) {
+        win.document.open();
+        win.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Proxy</title>
+            <style>
+              body { margin: 0; padding: 0; overflow: hidden; }
+              iframe { width: 100vw; height: 100vh; border: none; }
+            </style>
+          </head>
+          <body>
+            <iframe src="${url}" allow="fullscreen; microphone; camera; midi; encrypted-media; autoplay; clipboard-read; clipboard-write; web-share"></iframe>
+          </body>
+          </html>
+        `);
+        win.document.close();
+      }
+    } catch (error) {
+      // Fallback method
+      window.open(url, "_blank");
+    }
   };
 
   const processCommand = (command: string): string[] => {
@@ -45,7 +68,8 @@ export const useTerminalCommands = (): TerminalHooks => {
         "  echo [text] - display text",
         "  date - show current date",
         "  matrix - enter the matrix",
-        "  proxy - open proxy tab (use 'proxy nowgg' for now.gg)",
+        "  proxy - open proxy tab",
+        "  proxy nowgg - open now.gg-compatible proxy",
         "  vm - open Windows 11 VM",
         "  vm win10 - open Windows 10 VM",
         "  vm mint - open Linux Mint VM",
@@ -112,31 +136,54 @@ export const useTerminalCommands = (): TerminalHooks => {
     if (cmd === 'proxy' || cmd === 'proxy normal') {
       setProxyActive(true);
       openInBlankTab("https://holyubofficial.net");
-      return ["[proxy] opened proxy site in new tab"];
+      return [
+        "[proxy] initializing secure connection...",
+        "[proxy] routing through encrypted nodes...",
+        "[proxy] proxy site opened in new tab",
+        "[proxy] status: ACTIVE"
+      ];
     }
 
     if (cmd === 'proxy nowgg') {
       setProxyActive(true);
-      openInBlankTab("https://interstellar.cx");
-      return ["[proxy] opened now.gg-compatible proxy in new tab"];
+      openInBlankTab("https://nowgg.me");
+      return [
+        "[proxy] initializing now.gg-compatible proxy...",
+        "[proxy] optimizing for cloud gaming...",
+        "[proxy] now.gg proxy opened in new tab",
+        "[proxy] status: ACTIVE (now.gg optimized)"
+      ];
     }
 
     if (cmd === 'vm') {
       setVmActive(true);
       openInBlankTab("https://copy.sh/v86/?profile=windows");
-      return ["[vm] windows 11 launched in new tab"];
+      return [
+        "[vm] initializing virtual machine...",
+        "[vm] allocating resources...",
+        "[vm] windows 11 launched in new tab",
+        "[vm] status: RUNNING"
+      ];
     }
 
     if (cmd === 'vm win10') {
       setVmActive(true);
       openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=win10");
-      return ["[vm] windows 10 launched in new tab"];
+      return [
+        "[vm] initializing windows 10 environment...",
+        "[vm] windows 10 launched in new tab",
+        "[vm] status: RUNNING"
+      ];
     }
 
     if (cmd === 'vm mint') {
       setVmActive(true);
       openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=linuxmint");
-      return ["[vm] linux mint launched in new tab"];
+      return [
+        "[vm] initializing linux mint environment...",
+        "[vm] linux mint launched in new tab",
+        "[vm] status: RUNNING"
+      ];
     }
 
     if (parts[0] === 'open' && parts[1]) {

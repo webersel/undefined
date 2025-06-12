@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, Code, Shield, Server, MonitorUp } from 'lucide-react';
-import { useTerminalCommands } from '../hooks/useTerminalCommands';
+import { Terminal, Shield } from 'lucide-react';
 
 const Header: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const { state: { proxyActive, vmActive } } = useTerminalCommands();
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -36,22 +34,6 @@ const Header: React.FC = () => {
           </div>
           
           <div className="hidden sm:flex items-center space-x-6">
-            <div 
-              className={`group cursor-pointer flex items-center gap-2 ${proxyActive ? 'text-hacker-green' : 'text-hacker-green-dark'}`}
-            >
-              <MonitorUp size={18} className="group-hover:text-hacker-green transition-colors" />
-              <span className="text-xs font-mono">proxy</span>
-              <span className={`w-2 h-2 rounded-full ${proxyActive ? 'bg-hacker-green animate-pulse' : 'bg-hacker-gray-light'}`}></span>
-            </div>
-            
-            <div 
-              className={`group cursor-pointer flex items-center gap-2 ${vmActive ? 'text-hacker-green' : 'text-hacker-green-dark'}`}
-            >
-              <Server size={18} className="group-hover:text-hacker-green transition-colors" />
-              <span className="text-xs font-mono">vm</span>
-              <span className={`w-2 h-2 rounded-full ${vmActive ? 'bg-hacker-green animate-pulse' : 'bg-hacker-gray-light'}`}></span>
-            </div>
-            
             <div className="group cursor-pointer">
               <Shield size={18} className="text-hacker-green-dark group-hover:text-hacker-green transition-colors" />
             </div>
