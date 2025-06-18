@@ -106,8 +106,10 @@ export const useTerminalCommands = (): TerminalHooks => {
         "💻 VIRTUAL MACHINES:",
         "  vm - windows 11 virtual machine",
         "  vm win10 - windows 10 environment",
+        "  vm win7 - windows 7 classic",
         "  vm mint - linux mint system",
         "  vm kali - kali linux (hacker edition)",
+        "  vm ubuntu - ubuntu server",
         "",
         "🎮 GAMES & ENTERTAINMENT:",
         "  open [game] - launch supported games",
@@ -381,7 +383,34 @@ export const useTerminalCommands = (): TerminalHooks => {
       openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=win10");
       return [
         "💻 DEPLOYING WINDOWS 10 ENVIRONMENT...",
-        "└─ ✅ Windows 10 VM active in new tab"
+        "├─ allocating 3GB RAM...",
+        "├─ mounting system drives...",
+        "├─ loading Windows 10 Pro image...",
+        "└─ ✅ Windows 10 VM active in new tab",
+        "",
+        "🖥️  VM SPECIFICATIONS:",
+        "├─ OS: Windows 10 Pro",
+        "├─ RAM: 3072MB",
+        "├─ CPU: 2 virtual cores",
+        "└─ STORAGE: 15GB virtual disk"
+      ];
+    }
+
+    if (cmd === 'vm win7') {
+      setVmActive(true);
+      openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=win7");
+      return [
+        "💻 LOADING WINDOWS 7 CLASSIC...",
+        "├─ allocating 2GB RAM...",
+        "├─ mounting legacy drives...",
+        "├─ loading Windows 7 Ultimate image...",
+        "└─ ✅ Windows 7 VM ready for nostalgia",
+        "",
+        "🖥️  VM SPECIFICATIONS:",
+        "├─ OS: Windows 7 Ultimate",
+        "├─ RAM: 2048MB",
+        "├─ CPU: 1 virtual core",
+        "└─ STORAGE: 10GB virtual disk"
       ];
     }
 
@@ -390,7 +419,16 @@ export const useTerminalCommands = (): TerminalHooks => {
       openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=linuxmint");
       return [
         "🐧 INITIALIZING LINUX MINT ENVIRONMENT...",
-        "└─ ✅ Linux Mint VM active in new tab"
+        "├─ allocating 2GB RAM...",
+        "├─ mounting ext4 filesystem...",
+        "├─ loading Linux Mint 21 image...",
+        "└─ ✅ Linux Mint VM active in new tab",
+        "",
+        "🖥️  VM SPECIFICATIONS:",
+        "├─ OS: Linux Mint 21 Cinnamon",
+        "├─ RAM: 2048MB",
+        "├─ CPU: 2 virtual cores",
+        "└─ STORAGE: 12GB virtual disk"
       ];
     }
 
@@ -401,9 +439,35 @@ export const useTerminalCommands = (): TerminalHooks => {
         "🔴 LOADING KALI LINUX - HACKER EDITION...",
         "├─ mounting penetration testing tools...",
         "├─ configuring exploit frameworks...",
+        "├─ loading security arsenal...",
         "└─ ✅ Kali Linux VM ready for operations",
         "",
+        "🖥️  VM SPECIFICATIONS:",
+        "├─ OS: Kali Linux 2023.4",
+        "├─ RAM: 4096MB",
+        "├─ CPU: 2 virtual cores",
+        "├─ STORAGE: 25GB virtual disk",
+        "└─ TOOLS: 600+ security tools loaded",
+        "",
         "⚠️  WARNING: for educational purposes only"
+      ];
+    }
+
+    if (cmd === 'vm ubuntu') {
+      setVmActive(true);
+      openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=ubuntu");
+      return [
+        "🐧 DEPLOYING UBUNTU SERVER...",
+        "├─ allocating 2GB RAM...",
+        "├─ mounting ext4 filesystem...",
+        "├─ loading Ubuntu 22.04 LTS image...",
+        "└─ ✅ Ubuntu Server VM operational",
+        "",
+        "🖥️  VM SPECIFICATIONS:",
+        "├─ OS: Ubuntu 22.04 LTS Server",
+        "├─ RAM: 2048MB",
+        "├─ CPU: 2 virtual cores",
+        "└─ STORAGE: 15GB virtual disk"
       ];
     }
 
