@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import Terminal from '../components/Terminal';
-import HackerCard from '../components/HackerCard';
 import GlitchText from '../components/GlitchText';
-import { Server, Shield, Code, Cpu, Database, Wifi } from 'lucide-react';
+import { Server, Shield, Code, Database } from 'lucide-react';
 
 const Homepage: React.FC = () => {
   const [showMatrix, setShowMatrix] = useState(false);
@@ -10,8 +9,8 @@ const Homepage: React.FC = () => {
   return (
     <main className="container mx-auto px-4 py-8">
       <section className="mb-12">
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-          <div className="w-full md:w-1/2">
+        <div className="flex flex-col items-center">
+          <div className="w-full max-w-4xl">
             <h2 className="text-2xl mb-4 text-hacker-cyan relative inline-block">
               <GlitchText text="sys.init()" />
               <span className="absolute -bottom-1 left-0 w-full h-[1px] bg-hacker-cyan-dark"></span>
@@ -29,32 +28,6 @@ const Homepage: React.FC = () => {
             </p>
             
             <Terminal initialMessage="undefined system v2.0.3 [type 'help' for commands]" />
-          </div>
-          
-          <div className="w-full md:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <HackerCard 
-              title="ghost protocol" 
-              description="our stealth networking system for secure communications and data transfer"
-              icon={<Wifi size={20} />}
-            />
-            
-            <HackerCard 
-              title="zero-day research" 
-              description="exploring vulnerabilities for educational purposes and system hardening"
-              icon={<Shield size={20} />}
-            />
-            
-            <HackerCard 
-              title="byte_alchemy" 
-              description="transforming raw data into actionable intelligence through custom algorithms"
-              icon={<Code size={20} />}
-            />
-            
-            <HackerCard 
-              title="quantum edge" 
-              description="exploring the boundaries of computational theory and practical applications"
-              icon={<Cpu size={20} />}
-            />
           </div>
         </div>
       </section>
