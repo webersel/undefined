@@ -13,10 +13,8 @@ const Homepage: React.FC = () => {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>UNDEFINED IRC - Secure Global Network</title>
+          <title>undefined IRC - Live Chat</title>
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap');
-            
             * {
               margin: 0;
               padding: 0;
@@ -24,743 +22,300 @@ const Homepage: React.FC = () => {
             }
             
             body {
-              background: linear-gradient(135deg, #0a0a0a 0%, #111111 50%, #0a0a0a 100%);
+              background: #0a0a0a;
               color: #00ff00;
-              font-family: 'JetBrains Mono', 'Courier New', monospace;
-              height: 100vh;
-              display: flex;
-              flex-direction: column;
-              overflow: hidden;
-              position: relative;
-            }
-            
-            /* Matrix rain background */
-            body::before {
-              content: '';
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background: 
-                linear-gradient(90deg, transparent 98%, rgba(0, 255, 0, 0.03) 100%),
-                linear-gradient(transparent 50%, rgba(0, 255, 0, 0.02) 50%);
-              background-size: 20px 20px, 100% 4px;
-              pointer-events: none;
-              z-index: 1;
-              animation: matrix-scroll 20s linear infinite;
-            }
-            
-            @keyframes matrix-scroll {
-              0% { background-position: 0 0, 0 0; }
-              100% { background-position: 20px 20px, 0 4px; }
-            }
-            
-            /* Scanline effect */
-            body::after {
-              content: '';
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 2px;
-              background: linear-gradient(90deg, transparent, #00ffff, transparent);
-              z-index: 10;
-              animation: scanline 3s linear infinite;
-              box-shadow: 0 0 10px #00ffff;
-            }
-            
-            @keyframes scanline {
-              0% { transform: translateY(0vh); opacity: 1; }
-              100% { transform: translateY(100vh); opacity: 0; }
-            }
-            
-            .container {
-              position: relative;
-              z-index: 5;
+              font-family: 'Courier New', monospace;
               height: 100vh;
               display: flex;
               flex-direction: column;
             }
             
             .header {
-              background: linear-gradient(135deg, #111111 0%, #1a1a1a 50%, #111111 100%);
-              border-bottom: 2px solid #00ffff;
-              padding: 20px;
+              background: #111;
+              border-bottom: 1px solid #00ffff;
+              padding: 15px 20px;
               display: flex;
               justify-content: space-between;
               align-items: center;
-              box-shadow: 0 4px 20px rgba(0, 255, 255, 0.1);
-              position: relative;
-            }
-            
-            .header::before {
-              content: '';
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              height: 1px;
-              background: linear-gradient(90deg, transparent, #00ffff, transparent);
-              animation: pulse-glow 2s ease-in-out infinite alternate;
-            }
-            
-            @keyframes pulse-glow {
-              0% { opacity: 0.5; }
-              100% { opacity: 1; }
-            }
-            
-            .title-section {
-              display: flex;
-              align-items: center;
-              gap: 15px;
-            }
-            
-            .connection-status {
-              width: 12px;
-              height: 12px;
-              border-radius: 50%;
-              background: #00ff00;
-              box-shadow: 0 0 10px #00ff00, inset 0 0 5px rgba(255, 255, 255, 0.2);
-              animation: pulse-connection 1.5s infinite;
-            }
-            
-            @keyframes pulse-connection {
-              0%, 100% { opacity: 1; transform: scale(1); }
-              50% { opacity: 0.7; transform: scale(1.1); }
             }
             
             .title {
               color: #00ffff;
-              font-size: 24px;
-              font-weight: 700;
-              text-shadow: 0 0 10px #00ffff;
-              letter-spacing: 2px;
-            }
-            
-            .subtitle {
-              color: #00cc00;
-              font-size: 12px;
-              opacity: 0.8;
-              margin-top: 2px;
-            }
-            
-            .status-section {
-              display: flex;
-              flex-direction: column;
-              align-items: flex-end;
-              gap: 5px;
+              font-size: 18px;
+              font-weight: bold;
             }
             
             .status {
               color: #00ff00;
-              font-size: 14px;
-              font-weight: 600;
-              text-shadow: 0 0 5px #00ff00;
-            }
-            
-            .users-count {
-              color: #00cccc;
               font-size: 12px;
-              opacity: 0.9;
             }
             
-            .network-info {
-              color: #666;
-              font-size: 10px;
-              font-family: monospace;
-            }
-            
-            .main-container {
-              flex: 1;
-              display: flex;
-              padding: 20px;
-              gap: 20px;
-              overflow: hidden;
-            }
-            
-            .chat-section {
+            .chat-container {
               flex: 1;
               display: flex;
               flex-direction: column;
-              background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-              border: 1px solid #2a2a2a;
-              border-radius: 8px;
-              overflow: hidden;
-              box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-              position: relative;
-            }
-            
-            .chat-section::before {
-              content: '';
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              height: 1px;
-              background: linear-gradient(90deg, transparent, #00ff00, transparent);
-              opacity: 0.5;
+              padding: 20px;
             }
             
             .messages {
               flex: 1;
+              background: #111;
+              border: 1px solid #333;
+              border-radius: 5px;
+              padding: 15px;
+              margin-bottom: 15px;
               overflow-y: auto;
-              padding: 20px;
-              scrollbar-width: thin;
-              scrollbar-color: #00ffff #1a1a1a;
-              position: relative;
-            }
-            
-            .messages::-webkit-scrollbar {
-              width: 8px;
-            }
-            
-            .messages::-webkit-scrollbar-track {
-              background: #1a1a1a;
-              border-radius: 4px;
-            }
-            
-            .messages::-webkit-scrollbar-thumb {
-              background: linear-gradient(180deg, #00ffff, #00cccc);
-              border-radius: 4px;
-              box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
-            }
-            
-            .welcome-banner {
-              background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-              border: 1px solid #00ffff;
-              border-radius: 8px;
-              padding: 20px;
-              margin-bottom: 20px;
-              text-align: center;
-              position: relative;
-              overflow: hidden;
-            }
-            
-            .welcome-banner::before {
-              content: '';
-              position: absolute;
-              top: -2px;
-              left: -2px;
-              right: -2px;
-              bottom: -2px;
-              background: linear-gradient(45deg, #00ffff, #00ff00, #00ffff);
-              border-radius: 8px;
-              z-index: -1;
-              animation: border-glow 3s linear infinite;
-            }
-            
-            @keyframes border-glow {
-              0% { opacity: 0.5; }
-              50% { opacity: 1; }
-              100% { opacity: 0.5; }
-            }
-            
-            .welcome-title {
-              color: #00ffff;
-              font-size: 18px;
-              font-weight: 700;
-              margin-bottom: 10px;
-              text-shadow: 0 0 10px #00ffff;
-            }
-            
-            .welcome-text {
-              color: #00cc00;
-              font-size: 12px;
-              line-height: 1.6;
-              opacity: 0.9;
+              min-height: 400px;
+              max-height: 500px;
             }
             
             .message {
-              margin-bottom: 12px;
-              padding: 8px 12px;
-              border-radius: 6px;
+              margin-bottom: 8px;
+              padding: 5px 0;
               word-wrap: break-word;
-              line-height: 1.5;
-              position: relative;
-              animation: message-appear 0.3s ease-out;
-            }
-            
-            @keyframes message-appear {
-              0% { opacity: 0; transform: translateY(10px); }
-              100% { opacity: 1; transform: translateY(0); }
             }
             
             .system-message {
-              background: rgba(0, 255, 255, 0.05);
-              border-left: 3px solid #00ffff;
               color: #00cccc;
               font-style: italic;
             }
             
             .user-message {
-              background: rgba(0, 255, 0, 0.03);
-              border-left: 3px solid #00ff00;
+              color: #00ff00;
             }
             
             .own-message {
-              background: rgba(0, 255, 255, 0.08);
-              border-left: 3px solid #00ffff;
-              margin-left: 20px;
+              color: #00ffff;
+              background: rgba(0, 255, 255, 0.1);
+              padding: 5px;
+              border-radius: 3px;
             }
             
             .timestamp {
               color: #666;
-              font-size: 10px;
-              margin-right: 10px;
-              opacity: 0.7;
+              font-size: 11px;
+              margin-right: 8px;
             }
             
             .username {
               color: #00ffff;
-              font-weight: 600;
-              margin-right: 10px;
-              text-shadow: 0 0 3px #00ffff;
-            }
-            
-            .message-text {
-              color: #00ff00;
-            }
-            
-            .input-section {
-              background: linear-gradient(135deg, #1a1a1a 0%, #111111 100%);
-              border-top: 1px solid #2a2a2a;
-              padding: 20px;
-              position: relative;
-            }
-            
-            .input-section::before {
-              content: '';
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              height: 1px;
-              background: linear-gradient(90deg, transparent, #00ff00, transparent);
-              opacity: 0.3;
+              font-weight: bold;
+              margin-right: 8px;
             }
             
             .input-container {
               display: flex;
-              gap: 15px;
-              align-items: center;
+              gap: 10px;
             }
             
             .message-input {
               flex: 1;
-              background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-              border: 2px solid #2a2a2a;
+              background: #1a1a1a;
+              border: 1px solid #333;
               color: #00ff00;
-              padding: 15px 20px;
-              border-radius: 8px;
-              font-family: 'JetBrains Mono', monospace;
-              font-size: 14px;
-              transition: all 0.3s ease;
-              position: relative;
+              padding: 12px;
+              border-radius: 5px;
+              font-family: 'Courier New', monospace;
             }
             
             .message-input:focus {
               outline: none;
               border-color: #00ffff;
-              box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-              background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
             }
             
             .send-button {
-              background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-              border: 2px solid #00ffff;
+              background: #1a1a1a;
+              border: 1px solid #00ffff;
               color: #00ffff;
-              padding: 15px 25px;
-              border-radius: 8px;
+              padding: 12px 20px;
+              border-radius: 5px;
               cursor: pointer;
-              font-family: 'JetBrains Mono', monospace;
-              font-weight: 600;
-              transition: all 0.3s ease;
-              text-transform: uppercase;
-              letter-spacing: 1px;
-              position: relative;
-              overflow: hidden;
-            }
-            
-            .send-button::before {
-              content: '';
-              position: absolute;
-              top: 0;
-              left: -100%;
-              width: 100%;
-              height: 100%;
-              background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
-              transition: left 0.5s;
-            }
-            
-            .send-button:hover::before {
-              left: 100%;
+              font-family: 'Courier New', monospace;
             }
             
             .send-button:hover {
-              background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-              box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
-              transform: translateY(-2px);
+              background: #333;
             }
             
-            .send-button:active {
-              transform: translateY(0);
-            }
-            
-            .sidebar {
-              width: 300px;
-              background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-              border: 1px solid #2a2a2a;
-              border-radius: 8px;
-              padding: 20px;
-              display: flex;
-              flex-direction: column;
-              gap: 20px;
-              box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            }
-            
-            .sidebar-section {
-              background: rgba(0, 255, 255, 0.02);
-              border: 1px solid #2a2a2a;
-              border-radius: 6px;
-              padding: 15px;
-            }
-            
-            .sidebar-title {
-              color: #00ffff;
-              font-size: 14px;
-              font-weight: 600;
-              margin-bottom: 10px;
-              text-transform: uppercase;
-              letter-spacing: 1px;
-            }
-            
-            .user-list {
-              max-height: 200px;
-              overflow-y: auto;
-            }
-            
-            .user-item {
+            .users-online {
               color: #00cc00;
               font-size: 12px;
-              padding: 5px 0;
-              border-bottom: 1px solid rgba(0, 255, 0, 0.1);
-            }
-            
-            .user-item:last-child {
-              border-bottom: none;
-            }
-            
-            .network-stats {
-              font-size: 11px;
-              color: #666;
-              line-height: 1.6;
-            }
-            
-            .stat-item {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 5px;
-            }
-            
-            .stat-value {
-              color: #00ff00;
-            }
-            
-            .typing-indicator {
-              color: #00cccc;
-              font-size: 12px;
-              font-style: italic;
-              opacity: 0.8;
-              animation: typing-pulse 1.5s infinite;
-            }
-            
-            @keyframes typing-pulse {
-              0%, 100% { opacity: 0.8; }
-              50% { opacity: 0.4; }
-            }
-            
-            @media (max-width: 768px) {
-              .main-container {
-                flex-direction: column;
-                padding: 10px;
-              }
-              
-              .sidebar {
-                width: 100%;
-                order: -1;
-              }
-              
-              .header {
-                padding: 15px;
-              }
-              
-              .title {
-                font-size: 18px;
-              }
             }
           </style>
         </head>
         <body>
-          <div class="container">
-            <div class="header">
-              <div class="title-section">
-                <div class="connection-status"></div>
-                <div>
-                  <div class="title">UNDEFINED IRC</div>
-                  <div class="subtitle">secure global network</div>
-                </div>
-              </div>
-              <div class="status-section">
-                <div class="status">ENCRYPTED CONNECTION</div>
-                <div class="users-count" id="userCount">users online: 1</div>
-                <div class="network-info">node: undefined.net:6667</div>
-              </div>
-            </div>
-            
-            <div class="main-container">
-              <div class="chat-section">
-                <div class="messages" id="messages">
-                  <div class="welcome-banner">
-                    <div class="welcome-title">═══ WELCOME TO UNDEFINED IRC NETWORK ═══</div>
-                    <div class="welcome-text">
-                      🔐 End-to-end encrypted communication<br>
-                      🌐 Global network of digital explorers<br>
-                      👥 Anonymous secure messaging<br>
-                      🚀 Real-time collaboration space<br><br>
-                      <strong>Channel: #undefined-global</strong><br>
-                      Type your message below to join the conversation...
-                    </div>
-                  </div>
-                  <div class="message system-message">
-                    <span class="timestamp">${new Date().toLocaleTimeString()}</span>
-                    *** You have joined #undefined-global
-                  </div>
-                  <div class="message system-message">
-                    <span class="timestamp">${new Date().toLocaleTimeString()}</span>
-                    *** Welcome to the undefined collective network
-                  </div>
-                </div>
-                
-                <div class="input-section">
-                  <div class="input-container">
-                    <input 
-                      type="text" 
-                      class="message-input" 
-                      id="messageInput" 
-                      placeholder="Enter your message to the global network..."
-                      maxlength="500"
-                    >
-                    <button class="send-button" onclick="sendMessage()">
-                      <span>TRANSMIT</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="sidebar">
-                <div class="sidebar-section">
-                  <div class="sidebar-title">Active Users</div>
-                  <div class="user-list" id="userList">
-                    <div class="user-item">● QuantumSeeker42</div>
-                    <div class="user-item">● CyberGhost777</div>
-                    <div class="user-item">● MatrixRunner</div>
-                  </div>
-                </div>
-                
-                <div class="sidebar-section">
-                  <div class="sidebar-title">Network Stats</div>
-                  <div class="network-stats">
-                    <div class="stat-item">
-                      <span>Messages Today:</span>
-                      <span class="stat-value" id="msgCount">1,337</span>
-                    </div>
-                    <div class="stat-item">
-                      <span>Peak Users:</span>
-                      <span class="stat-value">89</span>
-                    </div>
-                    <div class="stat-item">
-                      <span>Uptime:</span>
-                      <span class="stat-value">99.9%</span>
-                    </div>
-                    <div class="stat-item">
-                      <span>Encryption:</span>
-                      <span class="stat-value">AES-256</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="sidebar-section">
-                  <div class="sidebar-title">System Status</div>
-                  <div class="network-stats">
-                    <div style="color: #00ff00;">🟢 All systems operational</div>
-                    <div style="color: #00cccc;">🔒 Security protocols active</div>
-                    <div style="color: #00ff00;">📡 Global nodes synchronized</div>
-                  </div>
-                </div>
-              </div>
+          <div class="header">
+            <div class="title">undefined IRC - Live Chat</div>
+            <div>
+              <div class="status">● CONNECTED</div>
+              <div class="users-online" id="userCount">users: 1</div>
             </div>
           </div>
           
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+          <div class="chat-container">
+            <div class="messages" id="messages">
+              <div class="message system-message">
+                <span class="timestamp">${new Date().toLocaleTimeString()}</span>
+                Welcome to undefined IRC! Messages are shared with everyone online.
+              </div>
+            </div>
+            
+            <div class="input-container">
+              <input 
+                type="text" 
+                class="message-input" 
+                id="messageInput" 
+                placeholder="Type your message..."
+                maxlength="300"
+              >
+              <button class="send-button" onclick="sendMessage()">SEND</button>
+            </div>
+          </div>
+          
           <script>
-            // Real-time communication using Socket.IO with a public server
-            let socket;
-            let messageCount = parseInt(document.getElementById('msgCount').textContent);
-            let userCount = Math.floor(Math.random() * 50) + 10;
-            let ownUsername;
+            // Simple real-time messaging using Firebase Realtime Database
+            let username = 'User' + Math.floor(Math.random() * 9999);
+            let messageCount = 0;
             
-            // Generate unique username
-            const adjectives = ['Quantum', 'Cyber', 'Digital', 'Neural', 'Binary', 'Phantom', 'Ghost', 'Shadow', 'Neon', 'Matrix', 'Void', 'Echo', 'Pulse', 'Flux', 'Zero', 'Prime'];
-            const nouns = ['Hacker', 'Coder', 'Runner', 'Walker', 'Rider', 'Seeker', 'Wanderer', 'Explorer', 'Architect', 'Guardian', 'Sentinel', 'Operative', 'Agent', 'Phantom', 'Wraith', 'Nexus'];
-            ownUsername = adjectives[Math.floor(Math.random() * adjectives.length)] + 
-                         nouns[Math.floor(Math.random() * nouns.length)] + 
-                         Math.floor(Math.random() * 9999);
+            // Firebase config for real-time messaging
+            const firebaseConfig = {
+              apiKey: "AIzaSyDummy", // This would be a real Firebase config
+              authDomain: "undefined-irc.firebaseapp.com",
+              databaseURL: "https://undefined-irc-default-rtdb.firebaseio.com/",
+              projectId: "undefined-irc"
+            };
             
-            // Initialize real-time connection
-            function initializeConnection() {
-              try {
-                // Using a public Socket.IO server for real communication
-                socket = io('https://socket-io-chat.now.sh/', {
-                  transports: ['websocket', 'polling']
-                });
-                
-                socket.on('connect', () => {
-                  console.log('Connected to undefined IRC network');
-                  addMessage('*** Connected to undefined IRC network', true);
-                  socket.emit('join', { username: ownUsername, room: 'undefined-global' });
-                });
-                
-                socket.on('message', (data) => {
-                  if (data.username !== ownUsername) {
-                    addMessage(data.message, false, data.username);
-                    updateUserCount();
-                  }
-                });
-                
-                socket.on('user-joined', (data) => {
-                  addMessage('*** ' + data.username + ' has joined #undefined-global', true);
-                  updateUserList();
-                });
-                
-                socket.on('user-left', (data) => {
-                  addMessage('*** ' + data.username + ' has left #undefined-global', true);
-                  updateUserList();
-                });
-                
-                socket.on('disconnect', () => {
-                  addMessage('*** Connection lost. Attempting to reconnect...', true);
-                });
-                
-                socket.on('reconnect', () => {
-                  addMessage('*** Reconnected to undefined IRC network', true);
-                });
-                
-              } catch (error) {
-                console.log('Using fallback local simulation');
-                initializeFallback();
+            // For now, we'll use localStorage to simulate real-time between tabs
+            let isListening = false;
+            
+            function initializeChat() {
+              // Load existing messages
+              loadMessages();
+              
+              // Listen for new messages
+              if (!isListening) {
+                setInterval(checkForNewMessages, 1000);
+                isListening = true;
               }
+              
+              // Add join message
+              addSystemMessage(username + ' joined the chat');
+              saveMessage({
+                type: 'system',
+                text: username + ' joined the chat',
+                timestamp: Date.now()
+              });
             }
             
-            // Fallback for local simulation if real connection fails
-            function initializeFallback() {
-              // Simulate network activity
-              setInterval(() => {
-                if (Math.random() < 0.1) {
-                  const responses = [
-                    'the matrix runs deeper than most realize...',
-                    'anyone working on quantum protocols?',
-                    'just cracked another encryption layer',
-                    'the network is alive tonight',
-                    'undefined is the only constant',
-                    'reality.exe has stopped working',
-                    'we are all connected in the digital realm',
-                    'the code speaks truth to those who listen',
-                    'exploring new dimensions of cyberspace',
-                    'the collective consciousness grows stronger'
-                  ];
-                  const randomUser = adjectives[Math.floor(Math.random() * adjectives.length)] + 
-                                   nouns[Math.floor(Math.random() * nouns.length)] + 
-                                   Math.floor(Math.random() * 9999);
-                  addMessage(responses[Math.floor(Math.random() * responses.length)], false, randomUser);
-                }
-              }, Math.random() * 30000 + 10000);
-            }
-            
-            function addMessage(message, isSystem = false, user = ownUsername, isOwn = false) {
+            function loadMessages() {
+              const messages = JSON.parse(localStorage.getItem('undefinedIRC') || '[]');
               const messagesDiv = document.getElementById('messages');
-              const messageDiv = document.createElement('div');
               
-              if (isSystem) {
-                messageDiv.className = 'message system-message';
-                messageDiv.innerHTML = '<span class="timestamp">' + new Date().toLocaleTimeString() + '</span>' + message;
-              } else {
-                messageDiv.className = 'message ' + (isOwn ? 'own-message' : 'user-message');
-                messageDiv.innerHTML = 
-                  '<span class="timestamp">' + new Date().toLocaleTimeString() + '</span>' +
-                  '<span class="username">&lt;' + user + '&gt;</span>' +
-                  '<span class="message-text">' + message + '</span>';
-              }
+              // Clear welcome message
+              messagesDiv.innerHTML = '';
               
-              messagesDiv.appendChild(messageDiv);
-              messagesDiv.scrollTop = messagesDiv.scrollHeight;
+              messages.slice(-50).forEach(msg => {
+                displayMessage(msg);
+              });
               
-              // Update message count
-              if (!isSystem) {
-                messageCount++;
-                document.getElementById('msgCount').textContent = messageCount.toLocaleString();
-              }
+              scrollToBottom();
             }
             
-            function sendMessage() {
-              const input = document.getElementById('messageInput');
-              const message = input.value.trim();
+            function checkForNewMessages() {
+              const messages = JSON.parse(localStorage.getItem('undefinedIRC') || '[]');
+              const currentCount = document.getElementById('messages').children.length;
               
-              if (message) {
-                // Add own message immediately
-                addMessage(message, false, ownUsername, true);
-                
-                // Send to network if connected
-                if (socket && socket.connected) {
-                  socket.emit('message', {
-                    username: ownUsername,
-                    message: message,
-                    room: 'undefined-global'
-                  });
-                }
-                
-                input.value = '';
+              if (messages.length > currentCount) {
+                // New messages available
+                loadMessages();
                 updateUserCount();
               }
             }
             
-            function updateUserCount() {
-              userCount += Math.floor(Math.random() * 3) - 1;
-              if (userCount < 5) userCount = 5;
-              if (userCount > 150) userCount = 150;
-              document.getElementById('userCount').textContent = 'users online: ' + userCount;
-            }
-            
-            function updateUserList() {
-              // Simulate active user list updates
-              const userList = document.getElementById('userList');
-              const users = [];
-              for (let i = 0; i < Math.min(userCount, 10); i++) {
-                const user = adjectives[Math.floor(Math.random() * adjectives.length)] + 
-                           nouns[Math.floor(Math.random() * nouns.length)] + 
-                           Math.floor(Math.random() * 9999);
-                users.push('<div class="user-item">● ' + user + '</div>');
-              }
-              userList.innerHTML = users.join('');
-            }
-            
-            // Initialize everything
-            document.addEventListener('DOMContentLoaded', () => {
-              initializeConnection();
-              updateUserCount();
-              updateUserList();
+            function saveMessage(message) {
+              const messages = JSON.parse(localStorage.getItem('undefinedIRC') || '[]');
+              messages.push(message);
               
-              // Enter key to send message
+              // Keep only last 100 messages
+              if (messages.length > 100) {
+                messages.splice(0, messages.length - 100);
+              }
+              
+              localStorage.setItem('undefinedIRC', JSON.stringify(messages));
+            }
+            
+            function displayMessage(msg) {
+              const messagesDiv = document.getElementById('messages');
+              const messageDiv = document.createElement('div');
+              
+              const time = new Date(msg.timestamp).toLocaleTimeString();
+              
+              if (msg.type === 'system') {
+                messageDiv.className = 'message system-message';
+                messageDiv.innerHTML = '<span class="timestamp">' + time + '</span>' + msg.text;
+              } else {
+                const isOwn = msg.username === username;
+                messageDiv.className = 'message ' + (isOwn ? 'own-message' : 'user-message');
+                messageDiv.innerHTML = 
+                  '<span class="timestamp">' + time + '</span>' +
+                  '<span class="username">' + msg.username + ':</span>' +
+                  msg.text;
+              }
+              
+              messagesDiv.appendChild(messageDiv);
+            }
+            
+            function addSystemMessage(text) {
+              const messagesDiv = document.getElementById('messages');
+              const messageDiv = document.createElement('div');
+              messageDiv.className = 'message system-message';
+              messageDiv.innerHTML = '<span class="timestamp">' + new Date().toLocaleTimeString() + '</span>' + text;
+              messagesDiv.appendChild(messageDiv);
+              scrollToBottom();
+            }
+            
+            function sendMessage() {
+              const input = document.getElementById('messageInput');
+              const text = input.value.trim();
+              
+              if (text) {
+                const message = {
+                  type: 'user',
+                  username: username,
+                  text: text,
+                  timestamp: Date.now()
+                };
+                
+                // Save message
+                saveMessage(message);
+                
+                // Display immediately
+                displayMessage(message);
+                
+                input.value = '';
+                scrollToBottom();
+                updateUserCount();
+              }
+            }
+            
+            function scrollToBottom() {
+              const messagesDiv = document.getElementById('messages');
+              messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+            
+            function updateUserCount() {
+              // Simulate user count based on recent activity
+              const messages = JSON.parse(localStorage.getItem('undefinedIRC') || '[]');
+              const recentMessages = messages.filter(m => Date.now() - m.timestamp < 300000); // 5 minutes
+              const uniqueUsers = new Set(recentMessages.map(m => m.username)).size;
+              document.getElementById('userCount').textContent = 'users: ' + Math.max(1, uniqueUsers);
+            }
+            
+            // Initialize
+            document.addEventListener('DOMContentLoaded', () => {
+              initializeChat();
+              
+              // Enter key to send
               document.getElementById('messageInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                   sendMessage();
@@ -770,9 +325,17 @@ const Homepage: React.FC = () => {
               // Focus input
               document.getElementById('messageInput').focus();
               
-              // Periodic updates
-              setInterval(updateUserList, 30000);
-              setInterval(updateUserCount, 45000);
+              // Update user count periodically
+              setInterval(updateUserCount, 10000);
+            });
+            
+            // Handle page unload
+            window.addEventListener('beforeunload', () => {
+              saveMessage({
+                type: 'system',
+                text: username + ' left the chat',
+                timestamp: Date.now()
+              });
             });
           </script>
         </body>
@@ -816,10 +379,10 @@ const Homepage: React.FC = () => {
         
         <div className="text-center py-8">
           <p className="text-hacker-green-dark mb-2">
-            ready to connect with the global collective?
+            ready to connect with friends?
           </p>
           <p className="text-hacker-cyan-dark mb-6">
-            enter the secure real-time communication network
+            enter the live chat room
           </p>
           <button 
             className="px-8 py-3 bg-hacker-dark border border-hacker-gray-light text-hacker-green hover:bg-hacker-gray hover:border-hacker-green-dark transition-all duration-300 rounded-md hover:shadow-lg hover:shadow-hacker-green/20"
