@@ -12,6 +12,40 @@ function App() {
     // Simulate loading for a hacker-like experience
     const timer = setTimeout(() => {
       setIsLoading(false);
+      
+      // Immediately open the site in about:blank after loading
+      setTimeout(() => {
+        const win = window.open("", "_blank");
+        if (win) {
+          win.document.open();
+          win.document.write(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>undefined collective</title>
+              <meta name="undefined-portal" content="true">
+              <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+              <style>
+                ${document.querySelector('style')?.innerHTML || ''}
+                body { margin: 0; padding: 0; overflow-x: hidden; }
+                iframe { width: 100vw; height: 100vh; border: none; }
+              </style>
+            </head>
+            <body>
+              <iframe src="${window.location.href}" allow="fullscreen; microphone; camera; midi; encrypted-media; autoplay; clipboard-read; clipboard-write; web-share"></iframe>
+            </body>
+            </html>
+          `);
+          win.document.close();
+          
+          // Close the original tab after opening in about:blank
+          setTimeout(() => {
+            window.close();
+          }, 1000);
+        }
+      }, 500);
     }, 1500);
 
     return () => clearTimeout(timer);

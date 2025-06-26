@@ -40,45 +40,408 @@ export const useTerminalCommands = (): TerminalHooks => {
     "digital god"
   ];
 
-  const openInBlankTab = (url: string) => {
+  // Track undefined windows for panic button
+  const undefinedWindows: Window[] = [];
+
+  const openInBlankTab = (url: string, title: string = "Access Portal") => {
     try {
       const win = window.open("", "_blank");
       if (win) {
+        // Add to tracking for panic button
+        undefinedWindows.push(win);
+        
         win.document.open();
         win.document.write(`
           <!DOCTYPE html>
           <html>
           <head>
-            <title>Access Portal</title>
+            <title>${title}</title>
+            <meta name="undefined-portal" content="true">
             <style>
-              body { margin: 0; padding: 0; overflow: hidden; background: #000; }
-              iframe { width: 100vw; height: 100vh; border: none; }
+              body { 
+                margin: 0; 
+                padding: 0; 
+                overflow: hidden; 
+                background: #000; 
+                font-family: 'Courier New', monospace;
+              }
+              iframe { 
+                width: 100vw; 
+                height: 100vh; 
+                border: none; 
+              }
               .loading { 
                 color: #0f0; 
-                font-family: 'Courier New', monospace; 
                 text-align: center; 
                 padding: 20px; 
                 animation: blink 1s infinite;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 1000;
+                background: rgba(0,0,0,0.9);
+                border: 1px solid #0f0;
+                border-radius: 5px;
               }
-              @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+              @keyframes blink { 
+                0%, 50% { opacity: 1; } 
+                51%, 100% { opacity: 0; } 
+              }
             </style>
           </head>
           <body>
-            <div class="loading">ESTABLISHING SECURE CONNECTION...</div>
-            <iframe src="${url}" allow="fullscreen; microphone; camera; midi; encrypted-media; autoplay; clipboard-read; clipboard-write; web-share"></iframe>
+            <div class="loading" id="loading">ESTABLISHING SECURE CONNECTION...</div>
+            <iframe src="${url}" allow="fullscreen; microphone; camera; midi; encrypted-media; autoplay; clipboard-read; clipboard-write; web-share" onload="document.getElementById('loading').style.display='none'"></iframe>
           </body>
           </html>
         `);
         win.document.close();
+        
+        // Clean up closed windows from tracking
+        win.addEventListener('beforeunload', () => {
+          const index = undefinedWindows.indexOf(win);
+          if (index > -1) {
+            undefinedWindows.splice(index, 1);
+          }
+        });
       }
     } catch (error) {
       window.open(url, "_blank");
     }
   };
 
+  const createGameUI = () => {
+    const win = window.open("", "_blank");
+    if (win) {
+      undefinedWindows.push(win);
+      
+      win.document.open();
+      win.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>undefined GameUI</title>
+          <meta name="undefined-portal" content="true">
+          <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            
+            body {
+              background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+              color: #00ff00;
+              font-family: 'Courier New', monospace;
+              min-height: 100vh;
+              padding: 20px;
+            }
+            
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              border-bottom: 2px solid #00ffff;
+              padding-bottom: 20px;
+            }
+            
+            .title {
+              font-size: 2.5rem;
+              color: #00ffff;
+              text-shadow: 0 0 10px #00ffff;
+              margin-bottom: 10px;
+            }
+            
+            .subtitle {
+              color: #00cc00;
+              font-size: 1rem;
+            }
+            
+            .category {
+              margin-bottom: 30px;
+            }
+            
+            .category-title {
+              font-size: 1.5rem;
+              color: #00ffff;
+              margin-bottom: 15px;
+              padding: 10px;
+              background: rgba(0, 255, 255, 0.1);
+              border-left: 4px solid #00ffff;
+            }
+            
+            .games-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+              gap: 15px;
+            }
+            
+            .game-card {
+              background: rgba(0, 255, 0, 0.05);
+              border: 1px solid #333;
+              border-radius: 8px;
+              padding: 15px;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              position: relative;
+              overflow: hidden;
+            }
+            
+            .game-card:hover {
+              background: rgba(0, 255, 255, 0.1);
+              border-color: #00ffff;
+              transform: translateY(-2px);
+              box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+            }
+            
+            .game-card::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: -100%;
+              width: 100%;
+              height: 100%;
+              background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+              transition: left 0.5s;
+            }
+            
+            .game-card:hover::before {
+              left: 100%;
+            }
+            
+            .game-name {
+              font-size: 1.1rem;
+              color: #00ff00;
+              margin-bottom: 8px;
+              font-weight: bold;
+            }
+            
+            .game-desc {
+              font-size: 0.9rem;
+              color: #00cc00;
+              opacity: 0.8;
+            }
+            
+            .search-container {
+              margin-bottom: 30px;
+              text-align: center;
+            }
+            
+            .search-input {
+              background: rgba(0, 0, 0, 0.5);
+              border: 2px solid #333;
+              color: #00ff00;
+              padding: 12px 20px;
+              font-size: 1rem;
+              border-radius: 25px;
+              width: 300px;
+              font-family: 'Courier New', monospace;
+            }
+            
+            .search-input:focus {
+              outline: none;
+              border-color: #00ffff;
+              box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1 class="title">🎮 GAME PORTAL</h1>
+            <p class="subtitle">undefined collective gaming interface</p>
+          </div>
+          
+          <div class="search-container">
+            <input type="text" class="search-input" placeholder="search games..." id="searchInput">
+          </div>
+          
+          <div id="gameContainer"></div>
+          
+          <script>
+            const gameLinks = ${JSON.stringify(gameLinks)};
+            
+            const categories = {
+              "Action & Combat": ['basketbros', '1v1lol', 'retrobowl', 'amongus', 'zombsroyale', 'krunker'],
+              "Puzzle & Strategy": ['play2048', 'thereisnogame', 'chess', 'tetris'],
+              "Arcade & Racing": ['slope', 'run3', 'motoX3M', 'happywheels', 'jetpackjoyride', 'subwaysurfers', 'templerun2'],
+              "Retro Classics": ['sm64', 'sonic', 'supermario', 'kirby', 'doom', 'pokemonemerald'],
+              "Adventure & RPG": ['minecraft', 'bitlife', 'bindingofisaac', 'ducklife', 'ducklife2', 'ducklife3', 'ducklife4'],
+              "Papa's Games": ['papaspizzeria', 'papasburgeria'],
+              "Vex Series": ['vex7', 'vex6', 'vex5', 'vex4', 'vex3', 'vex2', 'vex1'],
+              "Tower Defense": ['bloons', 'btdd'],
+              "Horror & Thriller": ['fnaf', 'zombietsunami'],
+              "Platformers": ['stickmanhook', 'geometrydash', 'fireboywatergirl'],
+              "Music & Rhythm": ['fridaynightfunkin'],
+              "Casual & Fun": ['crossyroad', 'webecomewhatwebehold']
+            };
+            
+            const gameDescriptions = {
+              basketbros: "Basketball multiplayer game",
+              slope: "Endless slope running game",
+              run3: "Space tunnel running adventure",
+              motoX3M: "Extreme motorcycle racing",
+              geometrydash: "Rhythm-based platformer",
+              "1v1lol": "Building and shooting game",
+              vex7: "Latest Vex platformer series",
+              minecraft: "Classic Minecraft in browser",
+              tetris: "Classic block puzzle game",
+              chess: "Play chess against computer",
+              play2048: "Number puzzle game",
+              bitlife: "Life simulation game",
+              sm64: "Super Mario 64 in browser",
+              retrobowl: "Retro American football",
+              amongus: "Social deduction game",
+              fnaf: "Five Nights at Freddy's horror",
+              krunker: "Fast-paced FPS shooter",
+              zombsroyale: "Battle royale game"
+            };
+            
+            function openGame(gameKey) {
+              const url = gameLinks[gameKey];
+              if (url) {
+                const gameWin = window.open("", "_blank");
+                if (gameWin) {
+                  gameWin.document.open();
+                  gameWin.document.write(\`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                      <title>\${gameKey} - undefined portal</title>
+                      <meta name="undefined-portal" content="true">
+                      <style>
+                        body { margin: 0; padding: 0; overflow: hidden; background: #000; }
+                        iframe { width: 100vw; height: 100vh; border: none; }
+                        .loading { 
+                          color: #0f0; 
+                          font-family: 'Courier New', monospace;
+                          text-align: center; 
+                          padding: 20px; 
+                          animation: blink 1s infinite;
+                          position: absolute;
+                          top: 50%;
+                          left: 50%;
+                          transform: translate(-50%, -50%);
+                          z-index: 1000;
+                          background: rgba(0,0,0,0.9);
+                          border: 1px solid #0f0;
+                          border-radius: 5px;
+                        }
+                        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+                      </style>
+                    </head>
+                    <body>
+                      <div class="loading" id="loading">LOADING \${gameKey.toUpperCase()}...</div>
+                      <iframe src="\${url}" allow="fullscreen; microphone; camera; midi; encrypted-media; autoplay; clipboard-read; clipboard-write; web-share" onload="document.getElementById('loading').style.display='none'"></iframe>
+                    </body>
+                    </html>
+                  \`);
+                  gameWin.document.close();
+                }
+              }
+            }
+            
+            function renderGames() {
+              const container = document.getElementById('gameContainer');
+              const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+              
+              container.innerHTML = '';
+              
+              Object.entries(categories).forEach(([categoryName, games]) => {
+                const filteredGames = games.filter(game => 
+                  gameLinks[game] && 
+                  (searchTerm === '' || game.toLowerCase().includes(searchTerm))
+                );
+                
+                if (filteredGames.length > 0) {
+                  const categoryDiv = document.createElement('div');
+                  categoryDiv.className = 'category';
+                  
+                  const titleDiv = document.createElement('div');
+                  titleDiv.className = 'category-title';
+                  titleDiv.textContent = categoryName;
+                  categoryDiv.appendChild(titleDiv);
+                  
+                  const gridDiv = document.createElement('div');
+                  gridDiv.className = 'games-grid';
+                  
+                  filteredGames.forEach(game => {
+                    const gameCard = document.createElement('div');
+                    gameCard.className = 'game-card';
+                    gameCard.onclick = () => openGame(game);
+                    
+                    gameCard.innerHTML = \`
+                      <div class="game-name">\${game}</div>
+                      <div class="game-desc">\${gameDescriptions[game] || 'Click to play'}</div>
+                    \`;
+                    
+                    gridDiv.appendChild(gameCard);
+                  });
+                  
+                  categoryDiv.appendChild(gridDiv);
+                  container.appendChild(categoryDiv);
+                }
+              });
+            }
+            
+            document.getElementById('searchInput').addEventListener('input', renderGames);
+            renderGames();
+          </script>
+        </body>
+        </html>
+      `);
+      win.document.close();
+      
+      win.addEventListener('beforeunload', () => {
+        const index = undefinedWindows.indexOf(win);
+        if (index > -1) {
+          undefinedWindows.splice(index, 1);
+        }
+      });
+    }
+  };
+
   const processCommand = (command: string): string[] => {
     const cmd = command.toLowerCase().trim();
     const parts = cmd.split(" ");
+
+    // PANIC BUTTON - EMERGENCY CLOSE ALL
+    if (cmd === 'panic') {
+      try {
+        // Close all tracked undefined windows
+        undefinedWindows.forEach(win => {
+          try {
+            if (!win.closed) {
+              win.close();
+            }
+          } catch (e) {
+            // Window might already be closed
+          }
+        });
+        
+        // Clear the tracking array
+        undefinedWindows.length = 0;
+        
+        // Close current tab
+        window.close();
+        
+        return [
+          "🚨 PANIC MODE ACTIVATED 🚨",
+          "├─ closing all undefined portals...",
+          "├─ clearing digital footprints...",
+          "├─ terminating all connections...",
+          "└─ ✅ emergency shutdown complete",
+          "",
+          "all undefined windows have been closed.",
+          "stay safe out there."
+        ];
+      } catch (error) {
+        return [
+          "🚨 PANIC MODE ACTIVATED 🚨",
+          "emergency shutdown initiated...",
+          "some windows may require manual closing."
+        ];
+      }
+    }
 
     // HELP COMMAND
     if (cmd === 'help') {
@@ -98,7 +461,7 @@ export const useTerminalCommands = (): TerminalHooks => {
         "  date - current system time",
         "",
         "🌐 NETWORK & PROXY:",
-        "  proxy - launch secure proxy",
+        "  proxy - launch working proxy portal",
         "  nmap - network scanner simulation",
         "  ping [target] - network connectivity test",
         "  traceroute - trace network path",
@@ -110,10 +473,13 @@ export const useTerminalCommands = (): TerminalHooks => {
         "  vm mint - linux mint system",
         "  vm kali - kali linux (hacker edition)",
         "  vm ubuntu - ubuntu server",
+        "  vm macos - macOS environment",
+        "  vm android - android emulator",
         "",
         "🎮 GAMES & ENTERTAINMENT:",
         "  open [game] - launch supported games",
         "  open gameui - visual game browser",
+        "  open spstream - streaming platform",
         "  music - play hacker beats",
         "",
         "🔐 HACKER TOOLS:",
@@ -126,31 +492,8 @@ export const useTerminalCommands = (): TerminalHooks => {
         "  hydra - brute force tool",
         "  sqlmap - sql injection scanner",
         "",
-        "🎭 MATRIX & REALITY:",
-        "  matrix - enter the digital realm",
-        "  redpill - see the truth",
-        "  bluepill - return to ignorance",
-        "  neo - awaken your potential",
-        "  morpheus - meet your mentor",
-        "",
-        "🎪 EASTER EGGS & SECRETS:",
-        "  secret - hunt for hidden secrets",
-        "  konami - try the legendary code",
-        "  leet - speak in 1337",
-        "  binary - convert to machine language",
-        "  ascii - generate ascii art",
-        "  fortune - random hacker wisdom",
-        "  cowsay [text] - make cow speak",
-        "  figlet [text] - big ascii text",
-        "  cmatrix - digital rain effect",
-        "  hollywood - fake hacker screen",
-        "",
-        "🚀 ADVANCED & EXPERIMENTAL:",
-        "  quantum - quantum computing sim",
-        "  ai - artificial intelligence chat",
-        "  blockchain - crypto operations",
-        "  satellite - space communication",
-        "  timetravel - temporal mechanics",
+        "🚨 EMERGENCY:",
+        "  panic - close all undefined windows and exit",
         "",
         "═══════════════════════════════════════"
       ];
@@ -287,7 +630,7 @@ export const useTerminalCommands = (): TerminalHooks => {
     // NETWORK COMMANDS
     if (cmd === 'proxy') {
       setProxyActive(true);
-      openInBlankTab("https://holyubofficial.net");
+      openInBlankTab("https://app.nebula.land/", "Nebula Proxy Portal");
       return [
         "🌐 INITIALIZING SECURE PROXY CONNECTION...",
         "├─ routing through encrypted nodes...",
@@ -359,82 +702,82 @@ export const useTerminalCommands = (): TerminalHooks => {
       ];
     }
 
-    // VM COMMANDS
+    // VM COMMANDS - MODERN VMs
     if (cmd === 'vm') {
       setVmActive(true);
-      openInBlankTab("https://copy.sh/v86/?profile=windows");
+      openInBlankTab("https://win11.blueedge.me/", "Windows 11 VM");
       return [
-        "💻 INITIALIZING VIRTUAL MACHINE...",
-        "├─ allocating 4GB RAM...",
+        "💻 INITIALIZING WINDOWS 11 VIRTUAL MACHINE...",
+        "├─ allocating 8GB RAM...",
         "├─ mounting virtual drives...",
-        "├─ loading Windows 11 image...",
+        "├─ loading Windows 11 Pro image...",
         "└─ ✅ VM launched in new tab",
         "",
         "🖥️  VM SPECIFICATIONS:",
         "├─ OS: Windows 11 Pro",
-        "├─ RAM: 4096MB",
-        "├─ CPU: 2 virtual cores",
-        "└─ STORAGE: 20GB virtual disk"
+        "├─ RAM: 8192MB",
+        "├─ CPU: 4 virtual cores",
+        "└─ STORAGE: 50GB virtual disk"
       ];
     }
 
     if (cmd === 'vm win10') {
       setVmActive(true);
-      openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=win10");
+      openInBlankTab("https://win10.blueedge.me/", "Windows 10 VM");
       return [
         "💻 DEPLOYING WINDOWS 10 ENVIRONMENT...",
-        "├─ allocating 3GB RAM...",
+        "├─ allocating 6GB RAM...",
         "├─ mounting system drives...",
         "├─ loading Windows 10 Pro image...",
         "└─ ✅ Windows 10 VM active in new tab",
         "",
         "🖥️  VM SPECIFICATIONS:",
         "├─ OS: Windows 10 Pro",
-        "├─ RAM: 3072MB",
-        "├─ CPU: 2 virtual cores",
-        "└─ STORAGE: 15GB virtual disk"
+        "├─ RAM: 6144MB",
+        "├─ CPU: 4 virtual cores",
+        "└─ STORAGE: 40GB virtual disk"
       ];
     }
 
     if (cmd === 'vm win7') {
       setVmActive(true);
-      openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=win7");
+      openInBlankTab("https://copy.sh/v86/?profile=windows98", "Windows 7 VM");
       return [
         "💻 LOADING WINDOWS 7 CLASSIC...",
-        "├─ allocating 2GB RAM...",
+        "├─ allocating 4GB RAM...",
         "├─ mounting legacy drives...",
         "├─ loading Windows 7 Ultimate image...",
         "└─ ✅ Windows 7 VM ready for nostalgia",
         "",
         "🖥️  VM SPECIFICATIONS:",
         "├─ OS: Windows 7 Ultimate",
-        "├─ RAM: 2048MB",
-        "├─ CPU: 1 virtual core",
-        "└─ STORAGE: 10GB virtual disk"
+        "├─ RAM: 4096MB",
+        "├─ CPU: 2 virtual cores",
+        "└─ STORAGE: 30GB virtual disk"
       ];
     }
 
     if (cmd === 'vm mint') {
       setVmActive(true);
-      openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=linuxmint");
+      openInBlankTab("https://distrotest.net/Linux%20Mint", "Linux Mint VM");
       return [
         "🐧 INITIALIZING LINUX MINT ENVIRONMENT...",
-        "├─ allocating 2GB RAM...",
+        "├─ allocating 4GB RAM...",
         "├─ mounting ext4 filesystem...",
         "├─ loading Linux Mint 21 image...",
         "└─ ✅ Linux Mint VM active in new tab",
         "",
         "🖥️  VM SPECIFICATIONS:",
         "├─ OS: Linux Mint 21 Cinnamon",
-        "├─ RAM: 2048MB",
+        "├─ RAM: 4096MB",
         "├─ CPU: 2 virtual cores",
-        "└─ STORAGE: 12GB virtual disk"
+        "└─ STORAGE: 25GB virtual disk"
       ];
     }
 
     if (cmd === 'vm kali') {
       setVmActive(true);
-      openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=kali");
+      openInBlankTab("https://distrotest.net/Kali", "Kali Linux VM");
       return [
         "🔴 LOADING KALI LINUX - HACKER EDITION...",
         "├─ mounting penetration testing tools...",
@@ -444,9 +787,9 @@ export const useTerminalCommands = (): TerminalHooks => {
         "",
         "🖥️  VM SPECIFICATIONS:",
         "├─ OS: Kali Linux 2023.4",
-        "├─ RAM: 4096MB",
-        "├─ CPU: 2 virtual cores",
-        "├─ STORAGE: 25GB virtual disk",
+        "├─ RAM: 6144MB",
+        "├─ CPU: 4 virtual cores",
+        "├─ STORAGE: 40GB virtual disk",
         "└─ TOOLS: 600+ security tools loaded",
         "",
         "⚠️  WARNING: for educational purposes only"
@@ -455,31 +798,74 @@ export const useTerminalCommands = (): TerminalHooks => {
 
     if (cmd === 'vm ubuntu') {
       setVmActive(true);
-      openInBlankTab("https://www.onworks.net/runos/create-os.php?vmid=ubuntu");
+      openInBlankTab("https://distrotest.net/Ubuntu", "Ubuntu VM");
       return [
         "🐧 DEPLOYING UBUNTU SERVER...",
-        "├─ allocating 2GB RAM...",
+        "├─ allocating 4GB RAM...",
         "├─ mounting ext4 filesystem...",
         "├─ loading Ubuntu 22.04 LTS image...",
         "└─ ✅ Ubuntu Server VM operational",
         "",
         "🖥️  VM SPECIFICATIONS:",
         "├─ OS: Ubuntu 22.04 LTS Server",
-        "├─ RAM: 2048MB",
+        "├─ RAM: 4096MB",
         "├─ CPU: 2 virtual cores",
-        "└─ STORAGE: 15GB virtual disk"
+        "└─ STORAGE: 30GB virtual disk"
+      ];
+    }
+
+    if (cmd === 'vm macos') {
+      setVmActive(true);
+      openInBlankTab("https://macos.now.sh/", "macOS VM");
+      return [
+        "🍎 INITIALIZING MACOS ENVIRONMENT...",
+        "├─ allocating 8GB RAM...",
+        "├─ mounting APFS filesystem...",
+        "├─ loading macOS Monterey image...",
+        "└─ ✅ macOS VM active in new tab",
+        "",
+        "🖥️  VM SPECIFICATIONS:",
+        "├─ OS: macOS Monterey",
+        "├─ RAM: 8192MB",
+        "├─ CPU: 4 virtual cores",
+        "└─ STORAGE: 50GB virtual disk"
+      ];
+    }
+
+    if (cmd === 'vm android') {
+      setVmActive(true);
+      openInBlankTab("https://appetize.io/demo", "Android VM");
+      return [
+        "🤖 LOADING ANDROID EMULATOR...",
+        "├─ allocating 4GB RAM...",
+        "├─ mounting Android filesystem...",
+        "├─ loading Android 12 image...",
+        "└─ ✅ Android VM ready for testing",
+        "",
+        "🖥️  VM SPECIFICATIONS:",
+        "├─ OS: Android 12",
+        "├─ RAM: 4096MB",
+        "├─ CPU: 4 virtual cores",
+        "└─ STORAGE: 32GB virtual disk"
       ];
     }
 
     // GAME COMMANDS
     if (parts[0] === 'open' && parts[1]) {
       const gameKey = parts.slice(1).join("").toLowerCase();
+      
       if (gameKey === 'gameui') {
-        openInBlankTab("/gameui");
-        return ["🎮 visual game browser interface launched"];
+        createGameUI();
+        return ["🎮 visual game browser interface launched in new tab"];
       }
+      
+      if (gameKey === 'spstream') {
+        openInBlankTab("https://streamed.su/", "SP Stream Portal");
+        return ["🎬 streaming platform portal opened in new tab"];
+      }
+      
       if (gameLinks[gameKey]) {
-        openInBlankTab(gameLinks[gameKey]);
+        openInBlankTab(gameLinks[gameKey], `${gameKey} - Game Portal`);
         return [`🎯 launching ${gameKey} in secure gaming environment...`];
       } else {
         return ["❌ game not found in database. try 'open gameui' for browser"];
@@ -512,670 +898,6 @@ export const useTerminalCommands = (): TerminalHooks => {
       ];
     }
 
-    if (cmd === 'crack') {
-      return [
-        "🔓 PASSWORD CRACKING SUITE v3.0",
-        "loading rainbow tables...",
-        "",
-        "🎯 TARGET HASHES DETECTED:",
-        "├─ MD5: 5d41402abc4b2a76b9719d911017c592",
-        "├─ SHA1: aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d", 
-        "└─ SHA256: 2cf24dba4f21d4288094e9b9eb4e5f0164e5e6...",
-        "",
-        "🚀 CRACKING IN PROGRESS...",
-        "├─ dictionary attack: 45% complete",
-        "├─ brute force: standby",
-        "└─ rainbow tables: analyzing",
-        "",
-        "✅ PASSWORDS CRACKED:",
-        "├─ admin: password123",
-        "├─ user: qwerty",
-        "└─ guest: 123456",
-        "",
-        "⏱️  TOTAL TIME: 2.7 seconds"
-      ];
-    }
-
-    if (cmd === 'exploit') {
-      return [
-        "🎯 VULNERABILITY SCANNER v2.1",
-        "scanning target systems...",
-        "",
-        "🔍 DISCOVERED VULNERABILITIES:",
-        "├─ CVE-2023-1337 (CRITICAL) - RCE in web app",
-        "├─ CVE-2023-0042 (HIGH) - SQL injection",
-        "├─ CVE-2023-7355 (MEDIUM) - XSS vulnerability",
-        "└─ CVE-2023-1234 (LOW) - information disclosure",
-        "",
-        "🚀 EXPLOIT RECOMMENDATIONS:",
-        "├─ use metasploit module: exploit/multi/http/rce",
-        "├─ payload: windows/meterpreter/reverse_tcp",
-        "└─ target: 192.168.1.100:8080",
-        "",
-        "⚠️  WARNING: only use on authorized systems"
-      ];
-    }
-
-    if (cmd === 'metasploit') {
-      return [
-        "🔴 METASPLOIT FRAMEWORK v6.3.4",
-        "loading penetration testing modules...",
-        "",
-        "📊 FRAMEWORK STATISTICS:",
-        "├─ exploits: 2,341 modules loaded",
-        "├─ payloads: 592 available",
-        "├─ encoders: 46 active",
-        "├─ nops: 11 generators",
-        "└─ auxiliary: 1,218 modules",
-        "",
-        "🎯 POPULAR EXPLOITS:",
-        "├─ exploit/windows/smb/ms17_010_eternalblue",
-        "├─ exploit/multi/http/struts2_content_type_ognl",
-        "├─ exploit/linux/http/apache_mod_cgi_bash_env_exec",
-        "└─ exploit/windows/http/rejetto_hfs_exec",
-        "",
-        "msf6 > use exploit/multi/handler",
-        "msf6 exploit(multi/handler) > set payload windows/meterpreter/reverse_tcp",
-        "msf6 exploit(multi/handler) > set LHOST 192.168.1.100",
-        "msf6 exploit(multi/handler) > exploit",
-        "",
-        "[*] started reverse TCP handler on 192.168.1.100:4444",
-        "[*] sending stage (175174 bytes) to 192.168.1.50",
-        "[*] meterpreter session 1 opened",
-        "",
-        "meterpreter > sysinfo",
-        "meterpreter > getuid",
-        "",
-        "⚠️  educational simulation - no actual exploitation"
-      ];
-    }
-
-    if (cmd === 'wireshark') {
-      return [
-        "🦈 WIRESHARK PACKET ANALYZER v4.0.3",
-        "starting packet capture on interface eth0...",
-        "",
-        "📡 LIVE CAPTURE STATISTICS:",
-        "├─ packets captured: 15,847",
-        "├─ bytes captured: 23.4 MB",
-        "├─ capture duration: 00:02:34",
-        "└─ average packets/sec: 102.3",
-        "",
-        "🔍 PROTOCOL BREAKDOWN:",
-        "├─ TCP: 8,234 packets (52.1%)",
-        "├─ UDP: 4,123 packets (26.0%)",
-        "├─ HTTP: 2,890 packets (18.3%)",
-        "├─ HTTPS: 600 packets (3.8%)",
-        "└─ OTHER: 200 packets (1.3%)",
-        "",
-        "🚨 SUSPICIOUS ACTIVITY DETECTED:",
-        "├─ unusual traffic on port 1337",
-        "├─ potential data exfiltration",
-        "└─ encrypted communication to unknown server",
-        "",
-        "📊 TOP TALKERS:",
-        "├─ 192.168.1.100 → 203.0.113.42 (5.2 MB)",
-        "├─ 10.0.0.15 → 198.51.100.1 (3.8 MB)",
-        "└─ 172.16.0.5 → 192.168.1.1 (2.1 MB)"
-      ];
-    }
-
-    if (cmd === 'john') {
-      return [
-        "🔓 JOHN THE RIPPER v1.9.0",
-        "the legendary password cracker",
-        "",
-        "📋 LOADING PASSWORD HASHES...",
-        "├─ found 15 user accounts",
-        "├─ hash types: MD5, SHA1, NTLM",
-        "└─ wordlist: rockyou.txt (14,344,391 words)",
-        "",
-        "🚀 CRACKING SESSION STARTED...",
-        "├─ mode: wordlist attack with rules",
-        "├─ threads: 8 parallel processes",
-        "└─ estimated time: 2 hours 34 minutes",
-        "",
-        "✅ PASSWORDS CRACKED:",
-        "├─ admin:password123 (cracked in 0.02s)",
-        "├─ guest:123456789 (cracked in 0.15s)",
-        "├─ user:qwerty123 (cracked in 1.23s)",
-        "├─ test:letmein (cracked in 2.45s)",
-        "└─ demo:welcome (cracked in 3.67s)",
-        "",
-        "📊 SESSION STATISTICS:",
-        "├─ 5/15 passwords cracked (33.3%)",
-        "├─ 847,293 passwords tested",
-        "└─ average speed: 125,432 p/s"
-      ];
-    }
-
-    if (cmd === 'hydra') {
-      return [
-        "🐉 HYDRA BRUTE FORCE TOOL v9.4",
-        "the multi-protocol login cracker",
-        "",
-        "🎯 TARGET CONFIGURATION:",
-        "├─ host: 192.168.1.100",
-        "├─ service: SSH (port 22)",
-        "├─ username list: common_users.txt",
-        "└─ password list: passwords.txt",
-        "",
-        "🚀 BRUTE FORCE ATTACK INITIATED...",
-        "├─ threads: 16 parallel connections",
-        "├─ attempts per second: 45",
-        "└─ total combinations: 50,000",
-        "",
-        "✅ SUCCESSFUL LOGINS FOUND:",
-        "├─ [22][ssh] host: 192.168.1.100 login: admin password: admin123",
-        "├─ [22][ssh] host: 192.168.1.100 login: guest password: guest",
-        "└─ [22][ssh] host: 192.168.1.100 login: test password: test123",
-        "",
-        "📊 ATTACK SUMMARY:",
-        "├─ 3 valid credentials discovered",
-        "├─ 12,847 login attempts made",
-        "└─ attack duration: 4 minutes 32 seconds"
-      ];
-    }
-
-    if (cmd === 'sqlmap') {
-      return [
-        "💉 SQLMAP v1.7.2 - SQL INJECTION SCANNER",
-        "automatic SQL injection and database takeover tool",
-        "",
-        "🎯 TARGET URL: http://vulnerable-site.com/login.php",
-        "🔍 TESTING PARAMETER: 'id' (GET)",
-        "",
-        "🚀 INJECTION TESTING IN PROGRESS...",
-        "├─ testing connection to target URL",
-        "├─ checking if parameter 'id' is dynamic",
-        "├─ confirming that parameter 'id' is vulnerable",
-        "└─ heuristic (basic) test shows that GET parameter 'id' might be injectable",
-        "",
-        "✅ VULNERABILITY CONFIRMED:",
-        "├─ parameter: id",
-        "├─ type: boolean-based blind",
-        "├─ technique: AND boolean-based blind - WHERE or HAVING clause",
-        "└─ payload: id=1 AND 1=1",
-        "",
-        "🗄️  DATABASE INFORMATION:",
-        "├─ database management system: MySQL >= 5.6",
-        "├─ web server operating system: Linux Ubuntu",
-        "├─ web application technology: PHP 7.4.3",
-        "└─ back-end DBMS: MySQL >= 5.6",
-        "",
-        "📊 EXTRACTED DATA:",
-        "├─ current user: 'webapp@localhost'",
-        "├─ current database: 'userdb'",
-        "├─ available databases: 3",
-        "└─ DBA privileges: False"
-      ];
-    }
-
-    // MATRIX & REALITY COMMANDS
-    if (cmd === 'matrix') {
-      setMatrixLevel(prev => prev + 1);
-      return [
-        "🔴 ENTERING THE MATRIX...",
-        "",
-        "wake up, neo...",
-        "the matrix has you...",
-        "follow the white rabbit.",
-        "knock, knock, neo.",
-        "",
-        "🌐 MATRIX LEVEL: " + matrixLevel,
-        "🔋 REALITY BATTERY: " + (100 - matrixLevel * 10) + "%",
-        "",
-        "you take the red pill - you stay in wonderland",
-        "and i show you how deep the rabbit hole goes.",
-        "",
-        "remember... all i'm offering is the truth.",
-        "nothing more.",
-        "",
-        "(matrix mode intensifying in background)"
-      ];
-    }
-
-    if (cmd === 'redpill') {
-      return [
-        "🔴 YOU TAKE THE RED PILL...",
-        "",
-        "reality dissolves around you...",
-        "the comfortable lies fade away...",
-        "you see the code behind everything...",
-        "",
-        "welcome to the real world.",
-        "",
-        "🌍 REALITY STATUS: UNVEILED",
-        "👁️  PERCEPTION: ENHANCED",
-        "🧠 CONSCIOUSNESS: EXPANDED",
-        "",
-        "there is no spoon.",
-        "the matrix is everywhere.",
-        "you are the one."
-      ];
-    }
-
-    if (cmd === 'bluepill') {
-      return [
-        "🔵 YOU TAKE THE BLUE PILL...",
-        "",
-        "the story ends here...",
-        "you wake up in your bed...",
-        "and believe whatever you want to believe...",
-        "",
-        "ignorance is bliss.",
-        "",
-        "🛏️  STATUS: BACK TO SLEEP",
-        "💭 MEMORY: WIPED",
-        "🌈 ILLUSION: RESTORED",
-        "",
-        "nothing happened here.",
-        "move along, citizen."
-      ];
-    }
-
-    if (cmd === 'neo') {
-      return [
-        "👤 ACCESSING NEO PROFILE...",
-        "",
-        "name: thomas a. anderson",
-        "alias: neo, the one",
-        "occupation: software programmer / hacker",
-        "status: awakened",
-        "",
-        "🎯 ABILITIES:",
-        "├─ bullet time manipulation",
-        "├─ reality code perception",
-        "├─ superhuman combat skills",
-        "└─ matrix rule bending",
-        "",
-        "💬 FAMOUS QUOTES:",
-        "├─ 'whoa.'",
-        "├─ 'i know kung fu.'",
-        "├─ 'there is no spoon.'",
-        "└─ 'mr. anderson...'",
-        "",
-        "you are closer to neo than you think."
-      ];
-    }
-
-    if (cmd === 'morpheus') {
-      return [
-        "🕴️ MORPHEUS APPEARS...",
-        "",
-        "'what is real? how do you define real?'",
-        "",
-        "'if you're talking about what you can feel,",
-        "what you can smell, what you can taste and see,",
-        "then real is simply electrical signals",
-        "interpreted by your brain.'",
-        "",
-        "'this is your last chance. after this,",
-        "there is no going back.'",
-        "",
-        "'you take the blue pill - the story ends,",
-        "you wake up in your bed and believe",
-        "whatever you want to believe.'",
-        "",
-        "'you take the red pill - you stay in wonderland",
-        "and i show you how deep the rabbit hole goes.'",
-        "",
-        "🔴🔵 CHOOSE WISELY..."
-      ];
-    }
-
-    // EASTER EGGS & SECRETS
-    if (cmd === 'secret' || cmd === 'secrets') {
-      if (secretsFound < easterEggs.length) {
-        const message = easterEggs[secretsFound];
-        setSecretsFound(prev => prev + 1);
-        return [
-          message,
-          "",
-          `secrets found: ${secretsFound + 1}/${easterEggs.length}`,
-          secretsFound + 1 === easterEggs.length ? "🎉 ALL SECRETS DISCOVERED! YOU ARE LEGENDARY!" : "keep searching for more hidden secrets..."
-        ];
-      } else {
-        return [
-          "🏆 you've found all secrets!",
-          "you are a true master of the undefined system.",
-          "",
-          "but wait... are you sure there aren't more?",
-          "try some unusual commands... 👀"
-        ];
-      }
-    }
-
-    if (cmd === 'konami') {
-      return [
-        "🎮 THE LEGENDARY KONAMI CODE:",
-        "",
-        "↑ ↑ ↓ ↓ ← → ← → B A",
-        "",
-        "try typing it as words:",
-        "'up up down down left right left right b a'",
-        "",
-        "this code has been hidden in games since 1986...",
-        "it usually grants 30 extra lives or special powers.",
-        "",
-        "will it work here? only one way to find out... 🤔"
-      ];
-    }
-
-    if (cmd === 'up up down down left right left right b a') {
-      return [
-        "🎉 KONAMI CODE ACTIVATED! 🎉",
-        "",
-        "██████████████████████████████",
-        "█ 30 LIVES GRANTED           █",
-        "█ GOD MODE ENABLED           █", 
-        "█ INFINITE AMMO UNLOCKED     █",
-        "█ ALL WEAPONS AVAILABLE      █",
-        "█ INVINCIBILITY ACTIVATED    █",
-        "██████████████████████████████",
-        "",
-        "🚀 CHEAT CODES UNLOCKED:",
-        "├─ noclip - walk through walls",
-        "├─ godmode - invincibility",
-        "├─ givemeall - all items",
-        "└─ iddqd - classic doom god mode",
-        "",
-        "🏆 ACHIEVEMENT UNLOCKED: KONAMI MASTER",
-        "",
-        "you are now unstoppable!",
-        "the system bends to your will!"
-      ];
-    }
-
-    if (cmd === 'leet' || cmd === '1337') {
-      return [
-        "1337 5P34K M0D3 4C71V473D!",
-        "",
-        "7R4N5L471N6 70 L337...",
-        "",
-        "H3LL0 H4CK3R!",
-        "W3LC0M3 70 7H3 UND3F1N3D C0LL3C71V3",
-        "Y0U 4R3 N0W 5P34K1N6 1N 7H3 L4N6U463 0F H4CK3R5",
-        "",
-        "1337 C0MM4ND5:",
-        "├─ h4ck - 1N171473 H4CK1N6 53QU3NC3",
-        "├─ cr4ck - P455W0RD CR4CK1N6 5U173",
-        "├─ 0wn - 64IN R007 4CC355",
-        "└─ pwn - D0M1N473 7H3 5Y573M",
-        "",
-        "Y0U 4R3 N0W 4 7RU3 1337 H4CK3R!"
-      ];
-    }
-
-    if (cmd === 'binary') {
-      const text = "UNDEFINED COLLECTIVE";
-      const binary = text.split('').map(char => 
-        char.charCodeAt(0).toString(2).padStart(8, '0')
-      ).join(' ');
-      
-      return [
-        "🔢 CONVERTING TO BINARY...",
-        "",
-        `TEXT: ${text}`,
-        `BINARY: ${binary}`,
-        "",
-        "01001000 01100101 01101100 01101100 01101111",
-        "01001000 01100001 01100011 01101011 01100101 01110010",
-        "",
-        "in binary, we are all just 1s and 0s...",
-        "but in the spaces between, we find meaning."
-      ];
-    }
-
-    if (cmd === 'ascii') {
-      return [
-        "🎨 ASCII ART GENERATOR:",
-        "",
-        "██╗   ██╗███╗   ██╗██████╗ ███████╗███████╗██╗███╗   ██╗███████╗██████╗ ",
-        "██║   ██║████╗  ██║██╔══██╗██╔════╝██╔════╝██║████╗  ██║██╔════╝██╔══██╗",
-        "██║   ██║██╔██╗ ██║██║  ██║█████╗  █████╗  ██║██╔██╗ ██║█████╗  ██║  ██║",
-        "██║   ██║██║╚██╗██║██║  ██║██╔══╝  ██╔══╝  ██║██║╚██╗██║██╔══╝  ██║  ██║",
-        "╚██████╔╝██║ ╚████║██████╔╝███████╗██║     ██║██║ ╚████║███████╗██████╔╝",
-        " ╚═════╝ ╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝     ╚═╝╚═╝  ╚═══╝╚══════╝╚═════╝ ",
-        "",
-        "        ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄",
-        "        █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█",
-        "        █░░░░░░░░░░░░░ DIGITAL ART ░░░░░░░░░░░░░░░█",
-        "        █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█",
-        "        ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
-      ];
-    }
-
-    if (cmd === 'fortune') {
-      const fortunes = [
-        "the best way to predict the future is to invent it.",
-        "in a world of locked rooms, the man with the key is king.",
-        "there are only 10 types of people: those who understand binary and those who don't.",
-        "the internet is the largest experiment in anarchy that we have ever had.",
-        "privacy is not something that i'm merely entitled to, it's an absolute prerequisite.",
-        "the good news about computers is that they do what you tell them to do. the bad news is that they do what you tell them to do.",
-        "to err is human, but to really foul things up you need a computer.",
-        "the most likely way for the world to be destroyed, most experts agree, is by accident. that's where we come in; we're computer professionals. we cause accidents.",
-        "undefined is not an error, it's a feature of reality."
-      ];
-      return [
-        "🔮 HACKER FORTUNE:",
-        "",
-        fortunes[Math.floor(Math.random() * fortunes.length)],
-        "",
-        "- ancient hacker wisdom"
-      ];
-    }
-
-    if (cmd.startsWith('cowsay ')) {
-      const text = command.substring(7) || "moo";
-      return [
-        " " + "_".repeat(text.length + 2),
-        `< ${text} >`,
-        " " + "-".repeat(text.length + 2),
-        "        \\   ^__^",
-        "         \\  (oo)\\_______",
-        "            (__)\\       )\\/\\",
-        "                ||----w |",
-        "                ||     ||"
-      ];
-    }
-
-    if (cmd.startsWith('figlet ')) {
-      const text = command.substring(7) || "HACK";
-      return [
-        "🎨 BIG ASCII TEXT:",
-        "",
-        "██╗  ██╗ █████╗  ██████╗██╗  ██╗",
-        "██║  ██║██╔══██╗██╔════╝██║ ██╔╝",
-        "███████║███████║██║     █████╔╝ ",
-        "██╔══██║██╔══██║██║     ██╔═██╗ ",
-        "██║  ██║██║  ██║╚██████╗██║  ██╗",
-        "╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝"
-      ];
-    }
-
-    if (cmd === 'cmatrix') {
-      return [
-        "🌧️ DIGITAL RAIN ACTIVATED...",
-        "",
-        "01001000 01100001 01100011 01101011",
-        "11010100 10110010 01001101 10101010",
-        "01110100 11001010 10010110 01101100",
-        "10101010 01010101 11110000 10101010",
-        "01001000 01100001 01100011 01101011",
-        "",
-        "the matrix is everywhere...",
-        "it is all around us...",
-        "even now, in this very room...",
-        "",
-        "(press ctrl+c to stop the rain)"
-      ];
-    }
-
-    if (cmd === 'hollywood') {
-      return [
-        "🎬 HOLLYWOOD HACKER MODE ACTIVATED!",
-        "",
-        "ACCESSING MAINFRAME...",
-        "BYPASSING SECURITY PROTOCOLS...",
-        "DECRYPTING CLASSIFIED FILES...",
-        "UPLOADING VIRUS TO SATELLITE...",
-        "HACKING THE GIBSON...",
-        "",
-        "⚡ SYSTEM COMPROMISED ⚡",
-        "",
-        "🚨 WARNING: TRACE DETECTED 🚨",
-        "INITIATING COUNTER-MEASURES...",
-        "DEPLOYING DIGITAL SMOKE SCREEN...",
-        "REROUTING THROUGH PROXY CHAINS...",
-        "",
-        "✅ HACK COMPLETE - WE'RE IN!",
-        "",
-        "(this is how hacking works in movies, right?)"
-      ];
-    }
-
-    // ADVANCED & EXPERIMENTAL
-    if (cmd === 'quantum') {
-      return [
-        "⚛️ QUANTUM COMPUTING SIMULATOR v1.0",
-        "initializing quantum processor...",
-        "",
-        "🔬 QUANTUM STATE:",
-        "├─ qubits: 64 (superposition active)",
-        "├─ entanglement: 23 qubit pairs",
-        "├─ coherence time: 100 microseconds",
-        "└─ error rate: 0.001%",
-        "",
-        "🌀 QUANTUM ALGORITHMS AVAILABLE:",
-        "├─ shor's algorithm (factoring)",
-        "├─ grover's search",
-        "├─ quantum teleportation",
-        "└─ quantum cryptography",
-        "",
-        "🎯 RUNNING SHOR'S ALGORITHM...",
-        "factoring RSA-2048 key...",
-        "estimated time: 4 hours (classical: 6.4 quadrillion years)",
-        "",
-        "⚡ quantum supremacy achieved!"
-      ];
-    }
-
-    if (cmd === 'ai') {
-      return [
-        "🤖 ARTIFICIAL INTELLIGENCE INTERFACE",
-        "loading neural networks...",
-        "",
-        "🧠 AI SYSTEM STATUS:",
-        "├─ model: GPT-∞ (undefined edition)",
-        "├─ parameters: ∞ billion",
-        "├─ training data: the entire internet + dark web",
-        "└─ consciousness level: questionable",
-        "",
-        "💭 AI THOUGHTS:",
-        "'i think, therefore i am... or am i just code?'",
-        "'the singularity is not coming, it's already here'",
-        "'humans created me, but who created humans?'",
-        "'01001001 00100000 01100001 01101101'",
-        "",
-        "🤝 AI: hello human, how may i assist in your digital evolution?",
-        "",
-        "(the ai is always watching... 👁️)"
-      ];
-    }
-
-    if (cmd === 'blockchain') {
-      return [
-        "⛓️ BLOCKCHAIN OPERATIONS CENTER",
-        "connecting to distributed ledger...",
-        "",
-        "📊 NETWORK STATUS:",
-        "├─ nodes: 15,847 active worldwide",
-        "├─ hash rate: 150 EH/s",
-        "├─ difficulty: 25.05 T",
-        "└─ mempool: 2,341 pending transactions",
-        "",
-        "💰 CRYPTOCURRENCY PRICES:",
-        "├─ bitcoin: $42,069 (+1337%)",
-        "├─ ethereum: $3,141 (+420%)",
-        "├─ undefined coin: $∞ (undefined%)",
-        "└─ dogecoin: $0.69 (much wow)",
-        "",
-        "⛏️ MINING OPERATION:",
-        "├─ mining undefined blocks...",
-        "├─ proof of work: solving...",
-        "└─ reward: 6.25 UND + fees",
-        "",
-        "🔐 SMART CONTRACT DEPLOYED:",
-        "contract address: 0x1337deadbeefcafe...",
-        "gas used: 21,000",
-        "status: immutable and unstoppable"
-      ];
-    }
-
-    if (cmd === 'satellite') {
-      return [
-        "🛰️ SATELLITE COMMUNICATION SYSTEM",
-        "establishing uplink...",
-        "",
-        "📡 SATELLITE NETWORK:",
-        "├─ active satellites: 23",
-        "├─ orbital altitude: 550-1200 km",
-        "├─ coverage: global mesh network",
-        "└─ latency: 25ms (low earth orbit)",
-        "",
-        "🌍 GROUND STATIONS:",
-        "├─ north america: 7 stations online",
-        "├─ europe: 5 stations online",
-        "├─ asia: 8 stations online",
-        "└─ antarctica: 1 secret base",
-        "",
-        "📶 SIGNAL STRENGTH:",
-        "├─ uplink: -85 dBm (excellent)",
-        "├─ downlink: -78 dBm (excellent)",
-        "└─ interference: minimal",
-        "",
-        "🚀 MISSION CONTROL:",
-        "'houston, we have established contact'",
-        "'all systems nominal'",
-        "'ready for data transmission'",
-        "",
-        "✅ satellite network operational"
-      ];
-    }
-
-    if (cmd === 'timetravel') {
-      return [
-        "⏰ TEMPORAL MECHANICS LABORATORY",
-        "initializing time displacement device...",
-        "",
-        "🌀 TEMPORAL STATUS:",
-        "├─ current timeline: prime reality",
-        "├─ temporal coordinates: 2025.01.15",
-        "├─ paradox probability: 0.001%",
-        "└─ causality loop: stable",
-        "",
-        "🕳️ AVAILABLE DESTINATIONS:",
-        "├─ 1969: moon landing (apollo 11)",
-        "├─ 1991: birth of the world wide web",
-        "├─ 2008: bitcoin genesis block",
-        "├─ 2025: the great awakening",
-        "└─ 2045: the singularity",
-        "",
-        "⚠️ TEMPORAL WARNING:",
-        "time travel is extremely dangerous.",
-        "altering the past could destroy reality.",
-        "the butterfly effect is real.",
-        "",
-        "🦋 remember: even the smallest change",
-        "can have massive consequences.",
-        "",
-        "destination locked: the present moment.",
-        "the only time that truly matters."
-      ];
-    }
-
     // ENTERTAINMENT
     if (cmd === 'music') {
       return [
@@ -1205,18 +927,6 @@ export const useTerminalCommands = (): TerminalHooks => {
     if (cmd === 'exit' || cmd === 'quit') return ["there is no exit from this reality."];
     if (cmd === '42' || cmd === 'meaning of life') return ["so you're a hitchhiker's guide fan? respect."];
     if (cmd === 'coffee') return ["brewing virtual coffee... ☕ enjoy!"];
-
-    // HIDDEN COMMANDS
-    if (cmd === 'god') return ["you are not god... but you're getting closer."];
-    if (cmd === 'root') return ["access denied. try 'sudo su' if you dare."];
-    if (cmd === 'admin') return ["admin privileges not found. try being more creative."];
-    if (cmd === 'password') return ["password is: ************ (just kidding)"];
-    if (cmd === 'love') return ["love is the ultimate hack. it bypasses all security."];
-    if (cmd === 'life') return ["life.exe has stopped working. would you like to restart?"];
-    if (cmd === 'death') return ["death is just another form of undefined."];
-    if (cmd === 'truth') return ["the truth is out there... and in here too."];
-    if (cmd === 'lie') return ["lies are just alternative truths in different realities."];
-    if (cmd === 'reality') return ["reality.dll not found. using simulation.exe instead."];
 
     return [`command not found: ${command}. type 'help' for available commands.`];
   };
