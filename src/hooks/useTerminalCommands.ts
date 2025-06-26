@@ -49,6 +49,7 @@ export const useTerminalCommands = (): TerminalHooks => {
       if (win) {
         // Add to tracking for panic button
         undefinedWindows.push(win);
+        win.name = 'undefined-portal';
         
         win.document.open();
         win.document.write(`
@@ -92,7 +93,7 @@ export const useTerminalCommands = (): TerminalHooks => {
           </head>
           <body>
             <div class="loading" id="loading">ESTABLISHING SECURE CONNECTION...</div>
-            <iframe src="${url}" allow="fullscreen; microphone; camera; midi; encrypted-media; autoplay; clipboard-read; clipboard-write; web-share" onload="document.getElementById('loading').style.display='none'"></iframe>
+            <iframe src="${url}" allow="fullscreen; microphone; camera; midi; encrypted-media; autoplay; clipboard-read; clipboard-write; web-share" onload="setTimeout(() => document.getElementById('loading').style.display='none', 2000)"></iframe>
           </body>
           </html>
         `);
@@ -115,6 +116,7 @@ export const useTerminalCommands = (): TerminalHooks => {
     const win = window.open("", "_blank");
     if (win) {
       undefinedWindows.push(win);
+      win.name = 'undefined-portal';
       
       win.document.open();
       win.document.write(`
@@ -301,6 +303,7 @@ export const useTerminalCommands = (): TerminalHooks => {
               if (url) {
                 const gameWin = window.open("", "_blank");
                 if (gameWin) {
+                  gameWin.name = 'undefined-portal';
                   gameWin.document.open();
                   gameWin.document.write(\`
                     <!DOCTYPE html>
@@ -331,7 +334,7 @@ export const useTerminalCommands = (): TerminalHooks => {
                     </head>
                     <body>
                       <div class="loading" id="loading">LOADING \${gameKey.toUpperCase()}...</div>
-                      <iframe src="\${url}" allow="fullscreen; microphone; camera; midi; encrypted-media; autoplay; clipboard-read; clipboard-write; web-share" onload="document.getElementById('loading').style.display='none'"></iframe>
+                      <iframe src="\${url}" allow="fullscreen; microphone; camera; midi; encrypted-media; autoplay; clipboard-read; clipboard-write; web-share" onload="setTimeout(() => document.getElementById('loading').style.display='none', 2000)"></iframe>
                     </body>
                     </html>
                   \`);
@@ -418,11 +421,33 @@ export const useTerminalCommands = (): TerminalHooks => {
           }
         });
         
+        // Also close any windows with undefined-portal name or meta tag
+        try {
+          const allWindows = [];
+          for (let i = 0; i < 50; i++) {
+            try {
+              const testWin = window.open('', `test${i}`);
+              if (testWin && testWin.name === 'undefined-portal') {
+                testWin.close();
+              }
+              if (testWin && testWin !== window) {
+                testWin.close();
+              }
+            } catch (e) {
+              // Ignore errors
+            }
+          }
+        } catch (e) {
+          // Ignore errors
+        }
+        
         // Clear the tracking array
         undefinedWindows.length = 0;
         
         // Close current tab
-        window.close();
+        setTimeout(() => {
+          window.close();
+        }, 500);
         
         return [
           "🚨 PANIC MODE ACTIVATED 🚨",
@@ -480,6 +505,7 @@ export const useTerminalCommands = (): TerminalHooks => {
         "  open [game] - launch supported games",
         "  open gameui - visual game browser",
         "  open spstream - streaming platform",
+        "  open tvstream - movie streaming portal",
         "  music - play hacker beats",
         "",
         "🔐 HACKER TOOLS:",
@@ -542,84 +568,6 @@ export const useTerminalCommands = (): TerminalHooks => {
       return [identities[Math.floor(Math.random() * identities.length)]];
     }
 
-    if (cmd === 'skills') return [
-      "🎯 COLLECTIVE SKILLSET MATRIX:",
-      "",
-      "🔴 OFFENSIVE SECURITY:",
-      "  ████████████ 95% - penetration testing",
-      "  ███████████░ 90% - exploit development", 
-      "  ██████████░░ 85% - social engineering",
-      "  █████████░░░ 80% - zero-day research",
-      "",
-      "🔵 DEFENSIVE SECURITY:",
-      "  ███████████░ 88% - incident response",
-      "  ██████████░░ 82% - forensic analysis",
-      "  █████████░░░ 78% - threat hunting",
-      "",
-      "🟢 DEVELOPMENT:",
-      "  ████████████ 96% - low-level programming",
-      "  ███████████░ 92% - reverse engineering",
-      "  ██████████░░ 87% - cryptography",
-      "",
-      "🟡 CREATIVE ARTS:",
-      "  █████████░░░ 75% - glitch art",
-      "  ████████░░░░ 70% - algorithmic music",
-      "  ███████░░░░░ 65% - digital poetry",
-      "",
-      "🟣 QUANTUM & AI:",
-      "  ██████░░░░░░ 55% - quantum computing",
-      "  █████░░░░░░░ 45% - machine learning",
-      "  ████░░░░░░░░ 35% - neural networks"
-    ];
-
-    if (cmd === 'projects') return [
-      "🚀 ACTIVE OPERATIONS STATUS:",
-      "",
-      "PROJECT GHOST [CLASSIFIED]",
-      "├─ stealth networking protocol",
-      "├─ status: 73% complete",
-      "└─ next milestone: quantum encryption",
-      "",
-      "PROJECT MIRROR [TOP SECRET]",
-      "├─ reality simulation framework", 
-      "├─ status: [REDACTED]",
-      "└─ clearance level: COSMIC",
-      "",
-      "PROJECT VOID [OPERATIONAL]",
-      "├─ data anonymization suite",
-      "├─ status: beta testing phase",
-      "└─ deployment: distributed nodes",
-      "",
-      "PROJECT ECHO [ACTIVE]",
-      "├─ quantum communication network",
-      "├─ status: fully operational",
-      "└─ coverage: global mesh network",
-      "",
-      "PROJECT PHOENIX [EXPERIMENTAL]",
-      "├─ consciousness transfer protocol",
-      "├─ status: theoretical phase",
-      "└─ ethics review: pending",
-      "",
-      "⚠️  all projects comply with educational use policies",
-      "🔒 classified details available to authorized personnel only"
-    ];
-
-    if (cmd === 'contact') return [
-      "🔐 SECURE COMMUNICATION PROTOCOLS:",
-      "",
-      "PRIMARY CHANNELS:",
-      "  📧 encrypted email: contact@undefined.void",
-      "  🔑 pgp fingerprint: 1337 DEAD BEEF CAFE BABE",
-      "  📱 signal: +1-555-UNDEFINED",
-      "",
-      "VERIFICATION CODES:",
-      "  🎭 today's code word: 'digital_phantom'",
-      "  🔢 authentication sequence: 7355608",
-      "",
-      "⚡ all communications are end-to-end encrypted",
-      "🛡️  zero-knowledge architecture implemented"
-    ];
-
     if (cmd.startsWith('echo ')) return [command.substring(5)];
     if (cmd === 'date') return [
       `current system time: ${new Date().toString()}`,
@@ -630,7 +578,7 @@ export const useTerminalCommands = (): TerminalHooks => {
     // NETWORK COMMANDS
     if (cmd === 'proxy') {
       setProxyActive(true);
-      openInBlankTab("https://app.nebula.land/", "Nebula Proxy Portal");
+      openInBlankTab("https://www.croxyproxy.com/", "CroxyProxy - Web Proxy");
       return [
         "🌐 INITIALIZING SECURE PROXY CONNECTION...",
         "├─ routing through encrypted nodes...",
@@ -641,64 +589,9 @@ export const useTerminalCommands = (): TerminalHooks => {
         "🔒 CONNECTION STATUS: SECURED",
         "🌍 EXIT NODE: randomized",
         "⚡ LATENCY: <50ms",
-        "🛡️  ENCRYPTION: AES-256"
-      ];
-    }
-
-    if (cmd === 'nmap') {
-      return [
-        "🔍 NMAP NETWORK SCANNER v7.94",
-        "scanning target network...",
+        "🛡️  ENCRYPTION: AES-256",
         "",
-        "🎯 TARGET: 192.168.1.0/24",
-        "📡 SCAN TYPE: TCP SYN stealth scan",
-        "",
-        "🖥️  DISCOVERED HOSTS:",
-        "├─ 192.168.1.1    (router/gateway)",
-        "├─ 192.168.1.15   (windows desktop)",
-        "├─ 192.168.1.23   (linux server)",
-        "├─ 192.168.1.42   (IoT device)",
-        "└─ 192.168.1.100  (unknown device)",
-        "",
-        "🔓 OPEN PORTS DETECTED:",
-        "├─ 22/tcp   SSH (secure shell)",
-        "├─ 80/tcp   HTTP (web server)",
-        "├─ 443/tcp  HTTPS (secure web)",
-        "├─ 1337/tcp UNKNOWN (suspicious)",
-        "└─ 3389/tcp RDP (remote desktop)",
-        "",
-        "⚠️  SECURITY ALERT: port 1337 shows unusual activity"
-      ];
-    }
-
-    if (cmd.startsWith('ping ')) {
-      const target = parts[1] || 'localhost';
-      return [
-        `🏓 PINGING ${target}...`,
-        "",
-        `64 bytes from ${target}: icmp_seq=1 ttl=64 time=0.123ms`,
-        `64 bytes from ${target}: icmp_seq=2 ttl=64 time=0.089ms`,
-        `64 bytes from ${target}: icmp_seq=3 ttl=64 time=0.156ms`,
-        `64 bytes from ${target}: icmp_seq=4 ttl=64 time=0.098ms`,
-        "",
-        `--- ${target} ping statistics ---`,
-        "4 packets transmitted, 4 received, 0% packet loss",
-        "round-trip min/avg/max = 0.089/0.116/0.156 ms"
-      ];
-    }
-
-    if (cmd === 'traceroute') {
-      return [
-        "🗺️  TRACEROUTE TO TARGET...",
-        "",
-        " 1  192.168.1.1      0.5ms   [local gateway]",
-        " 2  10.0.0.1         2.1ms   [ISP router]", 
-        " 3  203.0.113.1      15.3ms  [regional hub]",
-        " 4  198.51.100.1     28.7ms  [backbone router]",
-        " 5  * * *                    [filtered]",
-        " 6  203.0.113.42     45.2ms  [destination reached]",
-        "",
-        "🎯 trace complete: 6 hops, 45.2ms total"
+        "supports .onion links and unrestricted browsing"
       ];
     }
 
@@ -729,88 +622,7 @@ export const useTerminalCommands = (): TerminalHooks => {
         "├─ allocating 6GB RAM...",
         "├─ mounting system drives...",
         "├─ loading Windows 10 Pro image...",
-        "└─ ✅ Windows 10 VM active in new tab",
-        "",
-        "🖥️  VM SPECIFICATIONS:",
-        "├─ OS: Windows 10 Pro",
-        "├─ RAM: 6144MB",
-        "├─ CPU: 4 virtual cores",
-        "└─ STORAGE: 40GB virtual disk"
-      ];
-    }
-
-    if (cmd === 'vm win7') {
-      setVmActive(true);
-      openInBlankTab("https://copy.sh/v86/?profile=windows98", "Windows 7 VM");
-      return [
-        "💻 LOADING WINDOWS 7 CLASSIC...",
-        "├─ allocating 4GB RAM...",
-        "├─ mounting legacy drives...",
-        "├─ loading Windows 7 Ultimate image...",
-        "└─ ✅ Windows 7 VM ready for nostalgia",
-        "",
-        "🖥️  VM SPECIFICATIONS:",
-        "├─ OS: Windows 7 Ultimate",
-        "├─ RAM: 4096MB",
-        "├─ CPU: 2 virtual cores",
-        "└─ STORAGE: 30GB virtual disk"
-      ];
-    }
-
-    if (cmd === 'vm mint') {
-      setVmActive(true);
-      openInBlankTab("https://distrotest.net/Linux%20Mint", "Linux Mint VM");
-      return [
-        "🐧 INITIALIZING LINUX MINT ENVIRONMENT...",
-        "├─ allocating 4GB RAM...",
-        "├─ mounting ext4 filesystem...",
-        "├─ loading Linux Mint 21 image...",
-        "└─ ✅ Linux Mint VM active in new tab",
-        "",
-        "🖥️  VM SPECIFICATIONS:",
-        "├─ OS: Linux Mint 21 Cinnamon",
-        "├─ RAM: 4096MB",
-        "├─ CPU: 2 virtual cores",
-        "└─ STORAGE: 25GB virtual disk"
-      ];
-    }
-
-    if (cmd === 'vm kali') {
-      setVmActive(true);
-      openInBlankTab("https://distrotest.net/Kali", "Kali Linux VM");
-      return [
-        "🔴 LOADING KALI LINUX - HACKER EDITION...",
-        "├─ mounting penetration testing tools...",
-        "├─ configuring exploit frameworks...",
-        "├─ loading security arsenal...",
-        "└─ ✅ Kali Linux VM ready for operations",
-        "",
-        "🖥️  VM SPECIFICATIONS:",
-        "├─ OS: Kali Linux 2023.4",
-        "├─ RAM: 6144MB",
-        "├─ CPU: 4 virtual cores",
-        "├─ STORAGE: 40GB virtual disk",
-        "└─ TOOLS: 600+ security tools loaded",
-        "",
-        "⚠️  WARNING: for educational purposes only"
-      ];
-    }
-
-    if (cmd === 'vm ubuntu') {
-      setVmActive(true);
-      openInBlankTab("https://distrotest.net/Ubuntu", "Ubuntu VM");
-      return [
-        "🐧 DEPLOYING UBUNTU SERVER...",
-        "├─ allocating 4GB RAM...",
-        "├─ mounting ext4 filesystem...",
-        "├─ loading Ubuntu 22.04 LTS image...",
-        "└─ ✅ Ubuntu Server VM operational",
-        "",
-        "🖥️  VM SPECIFICATIONS:",
-        "├─ OS: Ubuntu 22.04 LTS Server",
-        "├─ RAM: 4096MB",
-        "├─ CPU: 2 virtual cores",
-        "└─ STORAGE: 30GB virtual disk"
+        "└─ ✅ Windows 10 VM active in new tab"
       ];
     }
 
@@ -822,13 +634,7 @@ export const useTerminalCommands = (): TerminalHooks => {
         "├─ allocating 8GB RAM...",
         "├─ mounting APFS filesystem...",
         "├─ loading macOS Monterey image...",
-        "└─ ✅ macOS VM active in new tab",
-        "",
-        "🖥️  VM SPECIFICATIONS:",
-        "├─ OS: macOS Monterey",
-        "├─ RAM: 8192MB",
-        "├─ CPU: 4 virtual cores",
-        "└─ STORAGE: 50GB virtual disk"
+        "└─ ✅ macOS VM active in new tab"
       ];
     }
 
@@ -840,13 +646,55 @@ export const useTerminalCommands = (): TerminalHooks => {
         "├─ allocating 4GB RAM...",
         "├─ mounting Android filesystem...",
         "├─ loading Android 12 image...",
-        "└─ ✅ Android VM ready for testing",
-        "",
-        "🖥️  VM SPECIFICATIONS:",
-        "├─ OS: Android 12",
-        "├─ RAM: 4096MB",
-        "├─ CPU: 4 virtual cores",
-        "└─ STORAGE: 32GB virtual disk"
+        "└─ ✅ Android VM ready for testing"
+      ];
+    }
+
+    if (cmd === 'vm kali') {
+      setVmActive(true);
+      openInBlankTab("https://distrotest.net/Kali", "Kali Linux VM");
+      return [
+        "🔴 LOADING KALI LINUX - HACKER EDITION...",
+        "├─ mounting penetration testing tools...",
+        "├─ configuring exploit frameworks...",
+        "├─ loading security arsenal...",
+        "└─ ✅ Kali Linux VM ready for operations"
+      ];
+    }
+
+    if (cmd === 'vm ubuntu') {
+      setVmActive(true);
+      openInBlankTab("https://distrotest.net/Ubuntu", "Ubuntu VM");
+      return [
+        "🐧 DEPLOYING UBUNTU SERVER...",
+        "├─ allocating 4GB RAM...",
+        "├─ mounting ext4 filesystem...",
+        "├─ loading Ubuntu 22.04 LTS image...",
+        "└─ ✅ Ubuntu Server VM operational"
+      ];
+    }
+
+    if (cmd === 'vm mint') {
+      setVmActive(true);
+      openInBlankTab("https://distrotest.net/Linux%20Mint", "Linux Mint VM");
+      return [
+        "🐧 INITIALIZING LINUX MINT ENVIRONMENT...",
+        "├─ allocating 4GB RAM...",
+        "├─ mounting ext4 filesystem...",
+        "├─ loading Linux Mint 21 image...",
+        "└─ ✅ Linux Mint VM active in new tab"
+      ];
+    }
+
+    if (cmd === 'vm win7') {
+      setVmActive(true);
+      openInBlankTab("https://copy.sh/v86/?profile=windows98", "Windows 7 VM");
+      return [
+        "💻 LOADING WINDOWS 7 CLASSIC...",
+        "├─ allocating 4GB RAM...",
+        "├─ mounting legacy drives...",
+        "├─ loading Windows 7 Ultimate image...",
+        "└─ ✅ Windows 7 VM ready for nostalgia"
       ];
     }
 
@@ -862,6 +710,23 @@ export const useTerminalCommands = (): TerminalHooks => {
       if (gameKey === 'spstream') {
         openInBlankTab("https://streamed.su/", "SP Stream Portal");
         return ["🎬 streaming platform portal opened in new tab"];
+      }
+      
+      if (gameKey === 'tvstream') {
+        openInBlankTab("https://fmovies.hn/", "TV Stream Portal");
+        return [
+          "📺 TV STREAMING PORTAL ACTIVATED",
+          "├─ connecting to movie database...",
+          "├─ loading streaming interface...",
+          "├─ bypassing geo-restrictions...",
+          "└─ ✅ fmovies portal opened in new tab",
+          "",
+          "🎬 FEATURES:",
+          "├─ latest movies and TV shows",
+          "├─ HD streaming quality",
+          "├─ no registration required",
+          "└─ ad-free viewing experience"
+        ];
       }
       
       if (gameLinks[gameKey]) {

@@ -9,43 +9,81 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Check if we're already in an about:blank tab to prevent infinite loop
+    const isInAboutBlank = window.location.href === 'about:blank' || 
+                          window.opener !== null || 
+                          document.referrer === '' ||
+                          window.name === 'undefined-portal';
+
     // Simulate loading for a hacker-like experience
     const timer = setTimeout(() => {
       setIsLoading(false);
       
-      // Immediately open the site in about:blank after loading
-      setTimeout(() => {
-        const win = window.open("", "_blank");
-        if (win) {
-          win.document.open();
-          win.document.write(`
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>undefined collective</title>
-              <meta name="undefined-portal" content="true">
-              <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
-              <style>
-                ${document.querySelector('style')?.innerHTML || ''}
-                body { margin: 0; padding: 0; overflow-x: hidden; }
-                iframe { width: 100vw; height: 100vh; border: none; }
-              </style>
-            </head>
-            <body>
-              <iframe src="${window.location.href}" allow="fullscreen; microphone; camera; midi; encrypted-media; autoplay; clipboard-read; clipboard-write; web-share"></iframe>
-            </body>
-            </html>
-          `);
-          win.document.close();
-          
-          // Close the original tab after opening in about:blank
-          setTimeout(() => {
-            window.close();
-          }, 1000);
-        }
-      }, 500);
+      // Only open in about:blank if we're NOT already in one
+      if (!isInAboutBlank && window.location.protocol !== 'file:') {
+        setTimeout(() => {
+          const win = window.open("", "_blank");
+          if (win) {
+            win.name = 'undefined-portal';
+            win.document.open();
+            win.document.write(`
+              <!DOCTYPE html>
+              <html lang="en">
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>undefined collective</title>
+                <meta name="undefined-portal" content="true">
+                <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+                <style>
+                  body { 
+                    margin: 0; 
+                    padding: 0; 
+                    overflow: hidden; 
+                    background: #0a0a0a;
+                    font-family: 'JetBrains Mono', monospace;
+                  }
+                  iframe { 
+                    width: 100vw; 
+                    height: 100vh; 
+                    border: none; 
+                  }
+                  .loading {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    color: #00ff00;
+                    font-family: 'JetBrains Mono', monospace;
+                    text-align: center;
+                    z-index: 1000;
+                    background: rgba(0,0,0,0.9);
+                    padding: 20px;
+                    border: 1px solid #00ff00;
+                    border-radius: 5px;
+                    animation: blink 1s infinite;
+                  }
+                  @keyframes blink { 
+                    0%, 50% { opacity: 1; } 
+                    51%, 100% { opacity: 0; } 
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="loading" id="loading">INITIALIZING UNDEFINED PORTAL...</div>
+                <iframe src="${window.location.href}" allow="fullscreen; microphone; camera; midi; encrypted-media; autoplay; clipboard-read; clipboard-write; web-share" onload="setTimeout(() => document.getElementById('loading').style.display='none', 1000)"></iframe>
+              </body>
+              </html>
+            `);
+            win.document.close();
+            
+            // Close the original tab after a delay
+            setTimeout(() => {
+              window.close();
+            }, 2000);
+          }
+        }, 1000);
+      }
     }, 1500);
 
     return () => clearTimeout(timer);
